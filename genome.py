@@ -1,5 +1,6 @@
 #De som implementerar verkar bara låta lagret på en ny node vara = fromnode.layer + 1
 
+Connectionhistory = None #Detta kommer vara globalt för alla nätverk senare.
 class genome():
     def __init__(self):
         self.nextnode = 1
