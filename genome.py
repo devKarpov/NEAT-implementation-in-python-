@@ -3,7 +3,7 @@
 class genome():
     def __init__(self):
         self.nextnode = 1
-        self.nodes = []
+        self.nodes = [] #Biasnoden ska ha sitt värde = 0
         self.connections = [] #Alla connections som det nuvarande nätverket har i sina gener
         self.inputnodes = 2
         self.outputnodes = 1
