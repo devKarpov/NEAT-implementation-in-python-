@@ -11,6 +11,6 @@ class connection():
     #Vikterna ska vara mellan -1 och 1
     def mutate(self): #Med detta system kommer varenda vikt i ett nätverk gå igenom denna funktion. Det betyder att 
         randomInt = random.randint(0, 10)
-        if randomfloat <= 9: # 90% av tiden 
+        if randomInt <= 9: # 90% av tiden 
             randomfloat = round(random.uniform(0.5, 1.5),2 ) #Hur mycket ska man avrunda?
 

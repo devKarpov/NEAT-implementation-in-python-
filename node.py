@@ -5,8 +5,8 @@ class Node():
     def __init__(self, id, layer):
         self.id = id
         self.layer = layer
-        self.inputsum = 0
-        self.activationvalue = 0
+        self.inputsum = None
+        self.activationvalue = None
         self.outconnections = []
 
 
@@ -20,4 +20,5 @@ class Node():
                 nodeid = connection.output
                 weight = connection.weight
                 node = genome.getNodeFromId(nodeid)
-                node.inputsum =+ weight * activationvalue 
+                node.inputsum += weight * activationvalue 
+#1,7310

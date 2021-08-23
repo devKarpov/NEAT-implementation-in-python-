@@ -26,7 +26,7 @@ class genome():
         for i in range(1, self.inputnodes + 1): #Sätter i som värdet på varje input node och skapar nya nodes med layer = 1 eftersom det är input layer
             node = Node(self.nextnode, 1) #Skapar Node med nextnode som Id och lagret = 1
             self.nodes.append(node)
-            self.nextnode =+ 1
+            self.nextnode += 1
 
     def initBiasNode(self): #Biasnode har värde = 0
         bias = Node(0, 1)
@@ -38,38 +38,49 @@ class genome():
         for i in range(1, self.outputnodes + 1): #Sätter nextnode som värdet på varje output node och skapar nya nodes med layer = 2 eftersom det är output layer
             node = Node(self.nextnode, 2) #Skapar Node med nextnode som Id och lagret = 1
             self.nodes.append(node)
-            self.nextnode =+ 1
+            self.nextnode += 1
+    
+    def initalizeNetwork(self): #Behövs bara köras första gången nätverket går igång
+        self.initBiasNode()
+        self.initInputNodes()
+        self.initOutputNodes()
     
     def getNodeFromId(self, id): #Säger säg självt
         return self.nodes[id]
 
     
-#Fortsätt utifrån att du har connections och nodes(utan node.layer insatt)
+    #Fortsätt utifrån att du har connections och nodes(utan node.layer insatt)
 
-    '''def setLayerOfNodes(self): #Tekniskt sätt behövs inte det här ännu för när vi väl sparar en genome kommer lagret på nodsen sparas.
-        predetermined = self.inputnodes + self.outputnodes + 1 #Antalet nodes som nätverket alltid kommer ha +1 för bias node
-        for connection in self.connections:
-            inputNode = self.getNodeFromId(connection.input)
-            outputNode = self.getNodeFromId(connection.output)
-            if inputNode
-            #Vi antar att det bara finns giltig connections och att output och input inte är samma eller att output layer är lägre än inputlayer (BEHÖVS ÄNDRAS FÖR RECURSIONS)
-            if outputNode.layer == inputNode.layer + 1:
-                #Detta funkar inte eftersom inputNode.layer kommer vara None
-                '''
     def useNetwork(self, dict): #dictionaryn innehåller input till input nodsen
         #Gå ingenom alla inputnodes och ändra deras inputsum
         for i in range(1,self.inputnodes + 1):
             noden = self.getNodeFromId(i)
             noden.inputsum =+ dict[str(i)]
+        #Går igenom varje node i varje lager (börjar från input lager) och lägger på sin (activation value * weight) på alla outgoing connections i out nodens inputsum
         for layer in range(1,self.layers + 1): #Detta går också igenom output layer?
             for node in self.nodes:
                 if node.layer == layer:
                     node.sendvalue(self)
         inputs = self.inputnodes
         return (self.getNodeFromId(inputs + 1).sigmoid())
-#KOLLA UPP LIST COMPREHENSIONS OCH LAMBDA
-    def connectNodes(self):
+    #KOLLA UPP LIST COMPREHENSIONS OCH LAMBDA
+
+    def connectNodes(self): # Går igenom alla connections som genome har och ger de relevanta connectionsarna till nodsen.
         for connection in self.connections:
-            fromNode = connection.input
-            fromNode = self.getNodeFromId(fromNode)
-            (fromNode.outconnections).append(connection)
+            if connection.enabled: #Ge bara om connectionen faktiskt är igång
+                fromNode = connection.input
+                fromNode = self.getNodeFromId(fromNode)
+                fromNode.outconnections.append(connection)
+
+    def clearNetwork(self): #Gör detta snabbare om det går
+        for node in self.nodes:
+            if node.id == 0: #Inte om bias node
+                node.outconnections = [] #Fixa så biasnoden har activationvalue och inputsum som konstanter
+                continue 
+            node.activationvalue = None
+            node.inputsum = None
+            node.outconnections = []
+
+    def makeReady(self):
+        self.clearNetwork()
+        self.connectNodes()

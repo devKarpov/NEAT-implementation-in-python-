@@ -2,9 +2,9 @@ from genome import genome
 from node import Node
 from connection import connection
 from history import connectionhistory
-
+import math
 genome1 = genome()
-genome1.inputnodes = 1
+genome1.inputnodes = 2
 genome1.initBiasNode()
 genome1.initInputNodes()
 genome1.initOutputNodes()
