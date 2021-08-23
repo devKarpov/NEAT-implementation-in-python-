@@ -9,5 +9,4 @@ class connectionhistory():
                 return innoNr #get vilket innovation number
         self.innovations.append([input, output])
         return 0
-    def getOutputconnections(nodeId): #
-        
+
