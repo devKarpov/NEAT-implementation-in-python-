@@ -5,8 +5,8 @@ class Node():
     def __init__(self, id, layer):
         self.id = id
         self.layer = layer
-        self.inputsum = None
-        self.activationvalue = None
+        self.inputsum = 0 #Detta kanske ska vara None
+        self.activationvalue = 0
         self.outconnections = []
 
 

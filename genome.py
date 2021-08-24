@@ -1,4 +1,5 @@
 #De som implementerar verkar bara låta lagret på en ny node vara = fromnode.layer + 1
+from history import connectionhistory
 from node import Node
 from connection import connection
 Connectionhistory = None #Detta kommer vara globalt för alla nätverk senare.
@@ -9,7 +10,7 @@ class genome():
         #Kanske borde använad en dictonary för nodsen, även för connections?
         self.nodes = [] #Biasnoden ska ha sitt värde = 0, Detta är i ordningen nodesen har kommit in i nätverket
         self.connections = [] #Alla connections som det nuvarande nätverket har i sina gener, Detta är i ordningen connections har kommit in i nätverket
-        self.inputnodes = 2
+        self.inputnodes = 1
         self.outputnodes = 1
         self.layers = 2
         self.biasnode = None
@@ -55,7 +56,8 @@ class genome():
         #Gå ingenom alla inputnodes och ändra deras inputsum
         for i in range(1,self.inputnodes + 1):
             noden = self.getNodeFromId(i)
-            noden.inputsum =+ dict[str(i)]
+            value = dict[str(i)]
+            noden.inputsum += value
         #Går igenom varje node i varje lager (börjar från input lager) och lägger på sin (activation value * weight) på alla outgoing connections i out nodens inputsum
         for layer in range(1,self.layers + 1): #Detta går också igenom output layer?
             for node in self.nodes:
@@ -78,9 +80,21 @@ class genome():
                 node.outconnections = [] #Fixa så biasnoden har activationvalue och inputsum som konstanter
                 continue 
             node.activationvalue = None
-            node.inputsum = None
+            node.inputsum = 0 #Kanske ska vara None
             node.outconnections = []
 
     def makeReady(self):
         self.clearNetwork()
         self.connectNodes()
+
+    def mutateConnection(self):
+        #Pick random from node and to node
+        if fromNode.layer == toNode.layer:
+            pass
+            #gör samma sak igen
+        elif fromNode.layer > toNode.layer: #DETTA BETYDER ATT DET INTE FINNS RECURSIONS
+            temporary = fromNode
+            fromNode = toNode #Ifall fromnode kommer i ett lager efter toNode så blir fromNode = toNode
+            toNode = temp
+        innovationnumber = connectionhistory.IsNew(fromNode.id, toNode)
+        newconnection = 
