@@ -1,11 +1,11 @@
 import random
 class connection():
-    def __init__(self, input, output):
+    def __init__(self, input, output, innonr):
         self.input = input
         self.output = output
         self.weight = 1
         self.enabled = True
-        self.innovationnumber = 0
+        self.innovationnumber = innonr
     #Testa det här https://stackoverflow.com/questions/31708478/how-to-evolve-weights-of-a-neural-network-in-neuroevolution
     #Frågan är hur man ska mutera vikterna
     #Vikterna ska vara mellan -1 och 1
