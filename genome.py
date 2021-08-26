@@ -96,6 +96,7 @@ class genome():
             temporary = fromNode
             fromNode = toNode #Ifall fromnode kommer i ett lager efter toNode så blir fromNode = toNode
             toNode = temp
+        #Kolla om connectionen redan finns och om den gör det går igenom processen igen (Gör detta till en function?)
         innovationnumber = connectionhistory.IsNew(fromNode.id, toNode)
-        newconnection = connection(fromNode.id, toNode.id, innovationnumber)
-       
+        newconnection = connection(fromNode.id, toNode.id, innovationnumber) # Du måste sätta en random vikt på connectionen också
+        
