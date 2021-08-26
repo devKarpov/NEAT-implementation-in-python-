@@ -87,7 +87,8 @@ class genome():
         self.clearNetwork()
         self.connectNodes()
 
-    def mutateConnection(self):
+    def mutateConnection(self): #Detta är inte effektivt.
+        #Hur kollar man så att det faktiskt går att göra en ny connection
         #Pick random from node and to node
         if fromNode.layer == toNode.layer:
             pass
@@ -96,7 +97,13 @@ class genome():
             temporary = fromNode
             fromNode = toNode #Ifall fromnode kommer i ett lager efter toNode så blir fromNode = toNode
             toNode = temp
-        #Kolla om connectionen redan finns och om den gör det går igenom processen igen (Gör detta till en function?)
-        innovationnumber = connectionhistory.IsNew(fromNode.id, toNode)
+        if self.connectionExists(fromNode.id, toNode.id):
+            pass #Det betyder att en connection redan finns
+        innovationnumber = connectionhistory.IsNew(fromNode.id, toNode.id)
         newconnection = connection(fromNode.id, toNode.id, innovationnumber) # Du måste sätta en random vikt på connectionen också
-        
+    
+    def connectionExists(self, fromNodeId, toNodeId):
+        for i in self.connections:
+            if i.input == fromNodeId and i.output == toNodeId:
+                return True
+        return False
