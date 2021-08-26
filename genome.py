@@ -97,4 +97,5 @@ class genome():
             fromNode = toNode #Ifall fromnode kommer i ett lager efter toNode så blir fromNode = toNode
             toNode = temp
         innovationnumber = connectionhistory.IsNew(fromNode.id, toNode)
-        newconnection = 
+        newconnection = connection(fromNode.id, toNode.id, innovationnumber)
+       
