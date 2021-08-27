@@ -107,3 +107,32 @@ class genome():
             if i.input == fromNodeId and i.output == toNodeId:
                 return True
         return False
+
+    def fullyConnected(self):
+        for node in self.nodes:#Går igenom varje node
+            layer = node.layer
+            antalConnections = len(node.outconnections) #Får antalet connections den noden har just nu
+            nodesEfter = 0
+            for searchNode in self.nodes: #tar fram alla nodes efter noden, maximalet antal connections är antalet nodes efter den
+                if searchNode.layer > layer:
+                    nodesEfter += 1
+            if antalConnections != nodesEfter: #Ifall dessa två nummer inte är desamma betyder det att nätverket inte är fullt
+                return False
+        return True
+
+    def twoNodesToConnect(self): #Vad ifall det är en node med full connection
+        randomNode = None
+        layer = randomnode.layer
+        possibleNodes = []
+        for searchNode in self.nodes: #Går igenom alla nodesen
+            if layer < searchNode.layer: #Om layer är lägre än search.layer är randomNode = fromNode vilket betyder att den får id1 för connectionExistsfunktionen
+                id1 = randomNode.id
+                id2 = searchNode.id
+            elif layer < searchNode.layer: #Vice versa
+                id1 = searchNode.id
+                id2 = randomNode.id
+            else: #Om de är i samma lager så gå bara till nästa node
+                continue
+            if not (self.connectionExists(id1, id2)): #Om connectionen inte existerar så lägg till NodeId i possible nodes
+                possibleNodes.append(searchNode.id)
+                
