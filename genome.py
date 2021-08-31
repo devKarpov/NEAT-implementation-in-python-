@@ -135,4 +135,17 @@ class genome():
                 continue
             if not (self.connectionExists(id1, id2)): #Om connectionen inte existerar så lägg till NodeId i possible nodes
                 possibleNodes.append(searchNode.id)
-                
+        
+    def getNodeWithConnections(self):
+        connectionTable = {}
+        for node in self.nodes:#Går igenom varje node
+            
+            layer = node.layer
+            antalConnections = len(node.outconnections) #Får antalet connections den noden har just nu
+            nodesEfter = 0
+            for searchNode in self.nodes: #tar fram alla nodes efter noden, maximalet antal connections är antalet nodes efter den
+                if searchNode.layer > layer:
+                    nodesEfter += 1
+            if antalConnections != nodesEfter: #Ifall dessa två nummer inte är desamma betyder det att nätverket inte är fullt
+                return False
+        return True
