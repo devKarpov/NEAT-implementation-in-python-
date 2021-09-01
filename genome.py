@@ -2,6 +2,7 @@
 from history import connectionhistory
 from node import Node
 from connection import connection
+import random
 Connectionhistory = None #Detta kommer vara globalt för alla nätverk senare.
 
 class genome():
@@ -135,4 +136,29 @@ class genome():
                 continue
             if not (self.connectionExists(id1, id2)): #Om connectionen inte existerar så lägg till NodeId i possible nodes
                 possibleNodes.append(searchNode.id)
+    
+    def mutateNode(self):
+        #Du måste få index för connectionen
+        length = len(self.connections)
+        i = random.randint(0, length-1) #få randomint
+        randomConnection = self.connections[i]
+        self.connections[i].Enabled = False #Måste den vara på från början för att det ska hända?
+
+        fromNode = randomConnection.input
+        toNode = randomConnection.output
+        layer = fromNode.layer + 1
+        if fromNode.layer + 1 == toNode.layer:
+            for node in self.nodes:
+                if node.layer > fromNode.layer:
+                    node.layer += 1
+        newNode = Node(self.nextnode, layer)
+        self.nextnode += 1
+        self.nodes.append(newNode)
+        #Skapa de två nya connectionsarna
+        Connectionhistory.isNew(fromNode.id, toNode.id)
+        firstConnection = connection(fromNode.id, toNode.id)
+        
+        
+        
+        
                 
