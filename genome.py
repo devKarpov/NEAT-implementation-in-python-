@@ -1,4 +1,5 @@
 #De som implementerar verkar bara låta lagret på en ny node vara = fromnode.layer + 1
+from typing import NewType
 from history import connectionhistory
 from node import Node
 from connection import connection
@@ -154,12 +155,12 @@ class genome():
     def mutateNode(self):
         #Du måste få index för connectionen
         length = len(self.connections)
-        i = random.randint(0, length-1) #få randomint
+        i = random.randint(0, length-1) #få index
         randomConnection = self.connections[i]
         self.connections[i].Enabled = False #Måste den vara på från början för att det ska hända?
 
-        fromNode = randomConnection.input
-        toNode = randomConnection.output
+        fromNode = self.getNodeFromId(randomConnection.input)
+        toNode = self.getNodeFromId(randomConnection.output)
         layer = fromNode.layer + 1
         if fromNode.layer + 1 == toNode.layer:
             for node in self.nodes:
@@ -169,9 +170,11 @@ class genome():
         self.nextnode += 1
         self.nodes.append(newNode)
         #Skapa de två nya connectionsarna
-        Connectionhistory.isNew(fromNode.id, toNode.id)
-        firstConnection = connection(fromNode.id, toNode.id)
-        
+        innonr = Connectionhistory.isNew(newNode.id, toNode.id)
+        firstConnection = connection(newNode.id, toNode.id, innonr)
+        innonr = Connectionhistory.isNew(fromNode.id, newNode.id)
+        firstConnection = connection(fromNode.id, newNode.id, innonr)
+               
         
         
         
