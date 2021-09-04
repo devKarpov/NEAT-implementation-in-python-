@@ -1,8 +1,6 @@
-Test = 1
-Test1 = 2
-temp = Test
-Test = Test1
-Test1 = temp
+from history import connectionhistory
 
-print(Test1)
-print(Test)
+
+test = connectionhistory()
+
+print(test.IsNew(1,2))
