@@ -127,8 +127,8 @@ class genome():
             temporary = fromNode
             fromNode = toNode #Ifall fromnode kommer i ett lager efter toNode så blir fromNode = toNode
             toNode = temporary
-        if self.connectionExists(fromNode.id, toNode.id):
-            pass #Det betyder att en connection redan finns
+        if self.connectionExists(fromNode.id, toNode.id): #Det betyder att en connection redan finns
+            return
         innovationnumber = self.history.isNew(fromNode.id, toNode.id)
         newconnection = connection(fromNode.id, toNode.id, innovationnumber) # Du måste sätta en random vikt på connectionen också
         self.connections.append(newconnection)
@@ -171,7 +171,7 @@ class genome():
             return
         i = random.randint(0, length-1) #få index
         randomConnection = self.connections[i] #Finns det något problem med att ta en random connection
-        self.connections[i].Enabled = False #Måste den vara på från början för att det ska hända?
+        self.connections[i].enabled = False #Måste den vara på från början för att det ska hända?
         fromNode = self.getNodeFromId(randomConnection.input)
         toNode = self.getNodeFromId(randomConnection.output)
         layer = fromNode.layer + 1
