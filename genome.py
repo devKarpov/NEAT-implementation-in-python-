@@ -50,9 +50,45 @@ class genome():
     
     def getNodeFromId(self, id): #Säger säg självt
         return self.nodes[id]
-
     
-    #Fortsätt utifrån att du har connections och nodes(utan node.layer insatt)
+    def connectNodes(self): # Går igenom alla connections som genome har och ger de relevanta connectionsarna till nodsen.
+        for connection in self.connections:
+            if connection.enabled: #Ge bara om connectionen faktiskt är igång
+                fromNode = connection.input
+                fromNode = self.getNodeFromId(fromNode)
+                fromNode.outconnections.append(connection)
+
+    def clearNetwork(self): #Gör detta snabbare om det går
+        for node in self.nodes:
+            if node.id == 0: #Inte om bias node
+                node.outconnections = [] #Fixa så biasnoden har activationvalue och inputsum som konstanter
+                continue 
+            node.activationvalue = None
+            node.inputsum = 0 #Kanske ska vara None
+            node.outconnections = []
+    
+    def fullyConnected(self):
+        for node in self.nodes:#Går igenom varje node
+            layer = node.layer
+            antalConnections = len(node.outconnections) #Får antalet connections den noden har just nu
+            nodesEfter = 0
+            for searchNode in self.nodes: #tar fram alla nodes efter noden, maximalet antal connections är antalet nodes efter den
+                if searchNode.layer > layer:
+                    nodesEfter += 1
+            if antalConnections != nodesEfter: #Ifall dessa två nummer inte är desamma betyder det att nätverket inte är fullt
+                return False
+        return True
+        #KOLLA UPP LIST COMPREHENSIONS OCH LAMBDA
+            
+    def connectionExists(self, fromNodeId, toNodeId):
+        for i in self.connections:
+            if i.input == fromNodeId and i.output == toNodeId:
+                return True
+        return False
+    
+    def makeReady(self):
+        self.clearNetwork()
+        self.connectNodes()
 
     def useNetwork(self, dict): #dictionaryn innehåller input till input nodsen
         #Gå ingenom alla inputnodes och ändra deras inputsum
@@ -73,65 +109,7 @@ class genome():
                         node.sendvalue(self)
         #Få outputNodsens values
         return outputNodesValue
-    #KOLLA UPP LIST COMPREHENSIONS OCH LAMBDA
 
-    def connectNodes(self): # Går igenom alla connections som genome har och ger de relevanta connectionsarna till nodsen.
-        for connection in self.connections:
-            if connection.enabled: #Ge bara om connectionen faktiskt är igång
-                fromNode = connection.input
-                fromNode = self.getNodeFromId(fromNode)
-                fromNode.outconnections.append(connection)
-
-    def clearNetwork(self): #Gör detta snabbare om det går
-        for node in self.nodes:
-            if node.id == 0: #Inte om bias node
-                node.outconnections = [] #Fixa så biasnoden har activationvalue och inputsum som konstanter
-                continue 
-            node.activationvalue = None
-            node.inputsum = 0 #Kanske ska vara None
-            node.outconnections = []
-
-    def makeReady(self):
-        self.clearNetwork()
-        self.connectNodes()
-            
-    def connectionExists(self, fromNodeId, toNodeId):
-        for i in self.connections:
-            if i.input == fromNodeId and i.output == toNodeId:
-                return True
-        return False
-    
-    def fullyConnected(self):
-        for node in self.nodes:#Går igenom varje node
-            layer = node.layer
-            antalConnections = len(node.outconnections) #Får antalet connections den noden har just nu
-            nodesEfter = 0
-            for searchNode in self.nodes: #tar fram alla nodes efter noden, maximalet antal connections är antalet nodes efter den
-                if searchNode.layer > layer:
-                    nodesEfter += 1
-            if antalConnections != nodesEfter: #Ifall dessa två nummer inte är desamma betyder det att nätverket inte är fullt
-                return False
-        return True
-    
-    def mutateConnection(self): #Detta är inte effektivt.
-        #Hur kollar man så att det faktiskt går att göra en ny connection
-        #Pick random from node and to node
-        if self.fullyConnected():
-            return 
-        nodeDict = self.getNodeWithConnections() #En dictonary med Nodeid som index där value är ett table med alla möjliga connections den noden kan ha
-        fromNode = random.choice(list(nodeDict))
-        toNode = random.choice(nodeDict[fromNode])
-        fromNode = self.getNodeFromId(int(fromNode))
-        toNode = self.getNodeFromId(toNode)
-        if fromNode.layer > toNode.layer: #DETTA BETYDER ATT DET INTE FINNS RECURSIONS
-            temporary = fromNode
-            fromNode = toNode #Ifall fromnode kommer i ett lager efter toNode så blir fromNode = toNode
-            toNode = temporary
-        if self.connectionExists(fromNode.id, toNode.id): #Det betyder att en connection redan finns
-            return
-        innovationnumber = self.history.isNew(fromNode.id, toNode.id)
-        newconnection = connection(fromNode.id, toNode.id, innovationnumber) # Du måste sätta en random vikt på connectionen också
-        self.connections.append(newconnection)
 
     def twoNodesToConnect(self): #Vad ifall det är en node med full connection. Det kanske finns ett sätt att använda det här än getNodeWithConnections
         randomNode = None
@@ -191,6 +169,26 @@ class genome():
         self.connections.append(firstConnection)
         self.connections.append(secondConnection)
                
+    def mutateConnection(self): #Detta är inte effektivt.
+        #Hur kollar man så att det faktiskt går att göra en ny connection
+        #Pick random from node and to node
+        if self.fullyConnected():
+            return 
+        nodeDict = self.getNodeWithConnections() #En dictonary med Nodeid som index där value är ett table med alla möjliga connections den noden kan ha
+        fromNode = random.choice(list(nodeDict))
+        toNode = random.choice(nodeDict[fromNode])
+        fromNode = self.getNodeFromId(int(fromNode))
+        toNode = self.getNodeFromId(toNode)
+        if fromNode.layer > toNode.layer: #DETTA BETYDER ATT DET INTE FINNS RECURSIONS
+            temporary = fromNode
+            fromNode = toNode #Ifall fromnode kommer i ett lager efter toNode så blir fromNode = toNode
+            toNode = temporary
+        if self.connectionExists(fromNode.id, toNode.id): #Det betyder att en connection redan finns
+            return
+        innovationnumber = self.history.isNew(fromNode.id, toNode.id)
+        newconnection = connection(fromNode.id, toNode.id, innovationnumber) # Du måste sätta en random vikt på connectionen också
+        self.connections.append(newconnection)
+
         
         
         
