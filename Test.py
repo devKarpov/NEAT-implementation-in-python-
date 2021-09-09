@@ -10,16 +10,19 @@ genome1.inputnodes = 1
 genome1.initBiasNode()
 genome1.initInputNodes()
 genome1.initOutputNodes()
-connection1 = connection(1, 2, 1)
-#connection2 = connection(0,2,1)
+connection1 = connection(1, 2, 2)
+connection2 = connection(0,2,1)
 genome1.connections.append(connection1)
-#genome1.connections.append(connection2)
-genome1.mutateConnection()
-genome1.makeReady()
-
+genome1.connections.append(connection2)
+def orderGenes(genome):
+    connections = genome.connections
+    #Använd sorted
+    sorted_cards = sorted(connections, key=lambda x: x.innovationnumber)
+    for i in sorted_cards:
+        print(i.innovationnumber)
 
 ##print(len(genome1.nodes[2].outconnections))
-print(genome1.useNetwork({"1" : 100}))
 
+orderGenes(genome1)
 miscFuncs.drawNetwork(genome1)
 miscFuncs.printConnections(genome1)

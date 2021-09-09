@@ -1,0 +1,5 @@
+Vajre genome behöver ett id i sig
+
+Genomsen behöver en genes lista (Vilket dem har)
+
+Reworka så nodesens ID är i en dictonary
