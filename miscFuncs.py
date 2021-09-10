@@ -36,7 +36,8 @@ def drawNetwork(genome):
                 X += distans
         y += 1
     #plota connections
-    for connection in genome.connections:
+    for connection in genome.connections.values():
+        #print(key)
         fromNodeId = str(connection.input)
         toNodeId = str(connection.output)
         X1 = nodeCords[fromNodeId][0]
@@ -53,5 +54,5 @@ def drawNetwork(genome):
 
 
 def printConnections(genome):
-    for connection in genome.connections:
+    for key, connection in enumerate(genome.connections):
         print(connection.input, "to", connection.output)

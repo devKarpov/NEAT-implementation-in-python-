@@ -11,7 +11,7 @@ class genome():
         self.nextnode = 1
         #Kanske borde använad en dictonary för nodsen, även för connections?
         self.nodes = [] #Biasnoden ska ha sitt värde = 0, Detta är i ordningen nodesen har kommit in i nätverket
-        self.connections = [] #Alla connections som det nuvarande nätverket har i sina gener, Detta är i ordningen connections har kommit in i nätverket
+        self.connections = {} #Alla connections som det nuvarande nätverket har i sina gener, Detta är i ordningen connections har kommit in i nätverket
         self.inputnodes = 1
         self.outputnodes = 1
         self.layers = 2
@@ -19,9 +19,9 @@ class genome():
     
     def getOutputconnections(self, nodeId): #Ger alla enabled connections som en node ska skicka till
         connections = [] #Connections funktionen ska returna
-        for connection in self.connections: #Går igenom nätverkets connections
+        for connection in self.connections.values(): #Går igenom nätverkets connections
             input = connection.input
-            if input == nodeId:
+            if input == nodeId and connection.enabled:
                 connections.append(connection)
         return connections #Kanske ska göra något om den är tom
 
@@ -52,7 +52,7 @@ class genome():
         return self.nodes[id]
     
     def connectNodes(self): # Går igenom alla connections som genome har och ger de relevanta connectionsarna till nodsen.
-        for connection in self.connections:
+        for connection in self.connections.values():
             if connection.enabled: #Ge bara om connectionen faktiskt är igång
                 fromNode = connection.input
                 fromNode = self.getNodeFromId(fromNode)
@@ -81,7 +81,7 @@ class genome():
         #KOLLA UPP LIST COMPREHENSIONS OCH LAMBDA
             
     def connectionExists(self, fromNodeId, toNodeId):
-        for i in self.connections:
+        for i in self.connections.values():
             if i.input == fromNodeId and i.output == toNodeId:
                 return True
         return False
@@ -135,6 +135,7 @@ class genome():
             for searchNode in self.nodes: #tar fram alla nodes efter noden, maximalet antal connections är antalet nodes efter den
                 if searchNode.layer > layer and not self.connectionExists(node.id, searchNode.id): #Kommer bli dubbelt för det kommer bli ex 1 2 och 2 1
                     #Om det här är True = nodsen är inte connectade med varandra
+                    #Kan man ens appenda en dictionary?
                     try:
                         connectionDict[str(node.id)].append(searchNode.id)
                     except:
@@ -147,9 +148,9 @@ class genome():
         length = len(self.connections) #GÅR INTE ATT MUTERA EN NODE MELLAN TVÅ NODES SOM INTE HAR CONNECTIONS
         if length == 0: #Betyder att det inte går att mutera
             return
-        i = random.randint(0, length-1) #få index
-        randomConnection = self.connections[i] #Finns det något problem med att ta en random connection
-        self.connections[i].enabled = False #Måste den vara på från början för att det ska hända?
+        tempList = list(self.connections.items()) #Långasmt?
+        innonr, randomConnection = random.choice(tempList) #Detta kanske går långsamt? du får en index
+        self.connections[innonr].enabled = False #Måste den vara på från början för att det ska hända?
         fromNode = self.getNodeFromId(randomConnection.input)
         toNode = self.getNodeFromId(randomConnection.output)
         layer = fromNode.layer + 1
@@ -164,10 +165,10 @@ class genome():
         #Skapa de två nya connectionsarna
         innonr = self.history.isNew(newNode.id, toNode.id)
         firstConnection = connection(newNode.id, toNode.id, innonr)
+        self.connections[str(innonr)] = firstConnection
         innonr = self.history.isNew(fromNode.id, newNode.id)
         secondConnection = connection(fromNode.id, newNode.id, innonr)
-        self.connections.append(firstConnection)
-        self.connections.append(secondConnection)
+        self.connections[str(innonr)] = secondConnection
                
     def mutateConnection(self): #Detta är inte effektivt.
         #Hur kollar man så att det faktiskt går att göra en ny connection
@@ -187,7 +188,7 @@ class genome():
             return
         innovationnumber = self.history.isNew(fromNode.id, toNode.id)
         newconnection = connection(fromNode.id, toNode.id, innovationnumber) # Du måste sätta en random vikt på connectionen också
-        self.connections.append(newconnection)
+        self.connections[str(innovationnumber)] = newconnection
 
         
         

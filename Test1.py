@@ -13,7 +13,8 @@ genome1.initInputNodes()
 genome1.initOutputNodes()
 
 genome1.makeReady
-for i in range(1,20):
+genome1.mutateConnection()
+for i in range(1,100):
     genome1.mutateConnection()
     genome1.mutateNode()
     genome1.makeReady
