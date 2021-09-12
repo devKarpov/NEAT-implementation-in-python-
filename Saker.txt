@@ -3,3 +3,7 @@ Vajre genome behöver ett id i sig
 Genomsen behöver en genes lista (Vilket dem har)
 
 Reworka så nodesens ID är i en dictonary
+
+I species så gör vissa funktioner till class functions
+
+Hur ska arterna individer dö? Ska man bara döda hälften av alla i varje art? Den sämre halvan

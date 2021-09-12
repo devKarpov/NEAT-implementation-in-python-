@@ -85,7 +85,7 @@ class genome():
             if i.input == fromNodeId and i.output == toNodeId:
                 return True
         return False
-    
+
     def makeReady(self):
         self.clearNetwork()
         self.connectNodes()
