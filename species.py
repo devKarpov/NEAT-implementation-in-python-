@@ -1,5 +1,8 @@
 #ordera genesen från början så slipper du göra det flera gånger
 import random
+from genome import genome
+from history import connectionhistory
+
 class species():
     def __init__(self,best):
         self.best = best #Den bästa individen i artens genome
@@ -152,6 +155,7 @@ class species():
             babyGenome = genome()
             babyGenome.connections = babyGenes
             babyGenome.nodes = genome1.nodes
+            babyGenome.mutate()
             baby = player(babyGenome)
             return baby
 

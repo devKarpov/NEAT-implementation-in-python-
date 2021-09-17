@@ -6,7 +6,7 @@ from species import species
 class population():
     def __init__(self):
         self.species = []
-        self.innoHistory = None
+        self.innoHistory = connectionhistory()
         self.players = []
 
     #Du behövder egentligen bara göra all evolution och sånt efter population i den nurvarande generationen har dött
@@ -71,10 +71,10 @@ class population():
             amountOfChildren = math.floor(art.averageFit/averageSum * self.size - 1) #mängden barn den arten får -1 för den bästa redan är i arten
             j = 0
             for i in range(0, amountOfChildren): #Inte plus 1 för 0 är 0 lmao
-                barn.append(art.createChild(history))
+                barn.append(art.createChild(self.innoHistory))
         if len(barn) != self.size: #ifall det finns mer platser så ge mer barn till den bästa arten
             bestArt = self.species[0]
             antal = self.size - len(barn)
             for i in range(0,antal):
-                barn.append(bestArt.createChild(history))
+                barn.append(bestArt.createChild(self.innoHistory))
         self.individer = barn

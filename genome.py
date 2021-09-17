@@ -191,6 +191,15 @@ class genome():
         self.connections[str(innovationnumber)] = newconnection
 
         
-        
-        
+    def mutate(self):
+        choices = [0,1,2]
+        probabiblity = [0.8, 0.05, 0.01]
+        choice = random.choice(choices, weights=probabiblity)
+        if choice == 0: #Mutera vikten 80% av tiden
+            for connection in self.connections:
+                connection.mutate()
+        elif choice == 1: #Mutera en ny connection 5% av tiden
+            self.mutateConnection()
+        elif choice == 2:
+            self.mutateNode()
                 
