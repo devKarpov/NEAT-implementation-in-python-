@@ -160,16 +160,16 @@ class species():
             return baby
 
     def sharedFitness(self): #Förstår inte riktigt men tror detta gör att inte en art tar över hela populationen
-        try:
-            self.individer = [element.fitness/len(self.individer) for element in self.individer]
-        except Exception  as e: #divide by zero error
-            print(e)
-            return
+        for individ in self.individer: #Försök göra detta på en radn för jag fattar inte hur man gör (how to run functon on attribute on all objects in list)
+            individ.fitness = individ.fitness/len(self.individer)
 
     def killHalf(self): #Dödar den sämre halvan av arten. Leta efter ett mer systematiskt sätt att döda av arten
+        #Problemet med det här är att det kommer döda arter där det finns en kvar
         #https://stackoverflow.com/questions/15715912/remove-the-last-n-elements-of-a-list
         #https://stackoverflow.com/questions/50451570/how-to-divide-a-list-and-delete-half-of-it-in-python
         #Arten måste vara sorterad först
-        self.individer = self.individer[:len(list)//2]
+        if len(self.individer) != 1:
+            self.individer = self.individer[:len(list)//2]
+        
 
     

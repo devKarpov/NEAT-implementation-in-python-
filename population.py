@@ -1,14 +1,16 @@
 #Hur många barn varje art ska ha fit (average fittness)/(average fitnessum (när det gäller alla arter)) * population size
 import math
 from species import species
-
+from history import connectionhistory
+from genome import genome
+from player import player
 
 class population():
     def __init__(self):
         self.species = []
         self.innoHistory = connectionhistory()
         self.players = []
-
+        self.size = 50
     #Du behövder egentligen bara göra all evolution och sånt efter population i den nurvarande generationen har dött
     #Dela upp spelarna i art
     
@@ -26,11 +28,11 @@ class population():
             #Ifall den kommer hit är den inte kompatibel med någon art så en ny måste skapas
             nyArt = species(player)
             self.species.append(nyArt)
+            
     
     def sortSpecies(self): #Sorts species by fitness
-        #Index 0 har bäst fitness
-        self.species = sorted(self.species, key=lambda x: x.averageFit).reverse()
-    
+        self.species = sorted(self.species, key=lambda x: (x.averageFit), reverse=True)
+
     def killHalfSpecies(self):
         for art in self.species:#T
             art.killHalf()
@@ -49,6 +51,10 @@ class population():
     def killDroppedOffSpecies(self):
         self.species = filter(lambda x: not (x.dropOff == 15), self.species)
 
+    def killBadSpecies(self):
+        print(type(self.species))
+        sum = self.averageFitnessSumma()
+        self.species = filter(lambda x: not (x.averageFitness()/sum * self.size < 1), self.species)
     def fitnessCalculation(self): #Göra fitnessharing här istället? Nej för då blir det anorlunda för antalet indivder här är större än vad det är senare
         #Räknar ut fitness från varje player
         #Nu ligger playersarna i arter så ugå inte från self.players
@@ -63,7 +69,7 @@ class population():
         self.killHalfSpecies()
         self.tommaSpecies()
         self.killDroppedOffSpecies()
-
+        self.killBadSpecies()
         barn = []
         averageSum = self.averageFitnessSumma
         for art in self.species: #Du behöver ge innovationhistory
@@ -78,3 +84,9 @@ class population():
             for i in range(0,antal):
                 barn.append(bestArt.createChild(self.innoHistory))
         self.individer = barn
+
+    def startPopulation(self):
+        startBrain = genome()
+        startPlayer = player(startBrain)
+        self.players.append(startPlayer)
+        self.nextGeneration()

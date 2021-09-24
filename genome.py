@@ -4,9 +4,8 @@ from history import connectionhistory
 from node import Node
 from connection import connection
 import random
-history = connectionhistory()
+
 class genome():
-    history = connectionhistory()
     def __init__(self):
         self.nextnode = 1
         #Kanske borde använad en dictonary för nodsen, även för connections?
@@ -142,7 +141,7 @@ class genome():
                         connectionDict[str(node.id)] = [searchNode.id]
         return connectionDict
 
-    def mutateNode(self):
+    def mutateNode(self,history):
         #Du måste få index för connectionen
         self.clearNetwork() #DET HÄR BEHVÖS EGENTLIGEN INTE GÖRAS TYP MEN JAG GÖR DET ÄNDÅ FIXA DET SENARELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
         length = len(self.connections) #GÅR INTE ATT MUTERA EN NODE MELLAN TVÅ NODES SOM INTE HAR CONNECTIONS
@@ -163,14 +162,14 @@ class genome():
         self.nextnode += 1
         self.nodes.append(newNode)
         #Skapa de två nya connectionsarna
-        innonr = self.history.isNew(newNode.id, toNode.id)
+        innonr = history.isNew(newNode.id, toNode.id)
         firstConnection = connection(newNode.id, toNode.id, innonr)
         self.connections[str(innonr)] = firstConnection
-        innonr = self.history.isNew(fromNode.id, newNode.id)
+        innonr = history.isNew(fromNode.id, newNode.id)
         secondConnection = connection(fromNode.id, newNode.id, innonr)
         self.connections[str(innonr)] = secondConnection
                
-    def mutateConnection(self): #Detta är inte effektivt.
+    def mutateConnection(self, history): #Detta är inte effektivt.
         #Hur kollar man så att det faktiskt går att göra en ny connection
         #Pick random from node and to node
         if self.fullyConnected():
@@ -186,12 +185,12 @@ class genome():
             toNode = temporary
         if self.connectionExists(fromNode.id, toNode.id): #Det betyder att en connection redan finns
             return
-        innovationnumber = self.history.isNew(fromNode.id, toNode.id)
+        innovationnumber = history.isNew(fromNode.id, toNode.id)
         newconnection = connection(fromNode.id, toNode.id, innovationnumber) # Du måste sätta en random vikt på connectionen också
         self.connections[str(innovationnumber)] = newconnection
 
         
-    def mutate(self):
+    def mutate(self,history):
         choices = [0,1,2]
         probabiblity = [0.8, 0.05, 0.01]
         choice = random.choice(choices, weights=probabiblity)
@@ -199,7 +198,7 @@ class genome():
             for connection in self.connections:
                 connection.mutate()
         elif choice == 1: #Mutera en ny connection 5% av tiden
-            self.mutateConnection()
+            self.mutateConnection(history)
         elif choice == 2:
-            self.mutateNode()
+            self.mutateNode(history)
                 
