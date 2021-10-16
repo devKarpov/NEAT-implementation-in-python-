@@ -1,7 +1,9 @@
-tables = [1,2,3,4]
+from population import population 
 
-for i in tables:
-    print(i)
-    #tables.remove(i)
+import miscFuncs
+pop = population()
 
-print(tables)
+pop.startPopulation()
+pop.nextGeneration()
+for i in pop.players:
+    miscFuncs.drawNetwork(i.brain)

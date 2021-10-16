@@ -191,14 +191,15 @@ class genome():
 
         
     def mutate(self,history):
-        choices = [0,1,2]
-        probabiblity = [0.8, 0.05, 0.01]
-        choice = random.choice(choices, weights=probabiblity)
-        if choice == 0: #Mutera vikten 80% av tiden
+        if random.random() < 0.8: #Mutera vikterna 80% av tiden
             for connection in self.connections:
                 connection.mutate()
-        elif choice == 1: #Mutera en ny connection 5% av tiden
+        
+        if random.random() < 0.05: #Mutera ny connection 5% av tiden
             self.mutateConnection(history)
-        elif choice == 2:
+        
+        if random.random() < 0.01: #Mutera ny node 1% av tiden
             self.mutateNode(history)
-                
+
+        
+

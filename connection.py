@@ -1,4 +1,5 @@
 import random
+import numpy.random
 #Anta att vikten ligger mellan -1 och 1
 class connection():
     def __init__(self, input, output, innonr):
@@ -16,7 +17,7 @@ class connection():
         if randomInt <= 9: # 90% av tiden 
             choices = [self.normalMutation(), self.signChange(), self.diffMutate(), self.completeChange(), self.weight]
             probability = [0.7, 0.05, 0.1, 0.1, 0.05]
-            weight = random.choice(choices, weights=probability)
+            weight = numpy.random.choice(choices, p=probability)
             self.weight = weight
 
     def normalMutation(self):

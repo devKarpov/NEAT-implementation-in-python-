@@ -2,13 +2,14 @@
 import random
 from genome import genome
 from history import connectionhistory
-
+from player import player
 class species():
     def __init__(self,best):
         self.best = best #Den bästa individen i artens genome
         self.individer = [best]
         self.averageFit = None
         self.dropOff = 0 #
+
     def averageFitness(self): #Dividebyzero
         totalfitness = 0
         for individ in self.individer:
@@ -55,13 +56,24 @@ class species():
         tgenes2 = self.orderGenes(genes1.values())
         highest = 0
         lower = 0
-        if tgenes1[-1].innovationnumber >= genes2[-1].innovationnumber:
-            #detta ger inte lower eftersom du kommer ha dem i array
-            highest = tgenes1[-1].innovationnumber
-            lower = tgenes2[-1].innovationnumber
-        else:
-            highest = tgenes2[-1].innovationnumber
-            lower = tgenes1[-1].innovationnumber
+        try:
+            if tgenes1[-1].innovationnumber >= genes2[-1].innovationnumber:
+                #detta ger inte lower eftersom du kommer ha dem i array
+                highest = tgenes1[-1].innovationnumber
+                lower = tgenes2[-1].innovationnumber
+            else:
+                highest = tgenes2[-1].innovationnumber
+                lower = tgenes1[-1].innovationnumber
+        except Exception as e:
+            print(e)
+            if len(tgenes1) == 0 and len(tgenes2) == 0:
+                return 0,0
+            elif len(tgenes1) == 0:
+                highest = tgenes1[-1].innovationnumber
+                lower = 0
+            elif len(tgenes2) == 0:
+                highest = tgenes2[-1].innovationnumber
+                lower = 0
         #Anta att du har två arrays
         genes1 = self.createArray(genes1, highest)
         genes2 = self.createArray(genes2, highest)
@@ -69,6 +81,7 @@ class species():
         excess = 0
         excessState = False
         for i in range(0,highest+ 1): #Ska det vara +1?
+
             if genes1[i] != genes2[i]:
                 if excessState:
                     excess += 1
@@ -87,6 +100,8 @@ class species():
         tgenes1 = self.orderGenes(genes1.values())
         tgenes2 = self.orderGenes(genes1.values())
         lower = 0
+        if len(tgenes1) == 0 or len(tgenes2) == 0: #går kanske att lägga ovanför?
+                return 0
         if tgenes1[-1].innovationnumber >= tgenes2[-1].innovationnumber:
             #detta ger inte lower eftersom du kommer ha dem i array
             lower = tgenes2[-1].innovationnumber
@@ -106,29 +121,62 @@ class species():
 
     #Kollar ifall genome är kompatibel till den arten
     def isCompatiable(self, testGenome):
-        sGenome = self.best
-        threshold = None #Sök upp
-        disjoint, excess = self.findDisjoinGenes(sGenome, testGenome)
-        weightDiff = self.weightDifference(sGenome, testGenome) #Spelar ordningen roll?
-        disjointCoefficent = 1
-        excessCoefficent = 1
+        sGenome = self.best.brain
+        disjoint, excess = self.findDisjoinGenes(sGenome.connections, testGenome.connections)
+        weightDiff = self.weightDifference(sGenome.connections, testGenome.connections) #Spelar ordningen roll?
+        threshold = 0.6
+        disjointCoefficent = 2
+        excessCoefficent = 2
         weightDiffCoefficent = 1
-        factorN = None #the factor N, the number of genes in the larger genome, normalizes for genome size (N can be set to 1 if both genomes are small, i.e., consist of fewer than 20 genes). 
+        factorN = 1
+        if len(sGenome.connections) < 20 and len(testGenome.connections) < 20:
+            factorN = 1 #the factor N, the number of genes in the larger genome, normalizes for genome size (N can be set to 1 if both genomes are small, i.e., consist of fewer than 20 genes). 
+        else: 
+            factorN = "Lös det här"
         Delta = ((excessCoefficent * excess)/factorN) + ((disjointCoefficent * disjoint)/factorN) + weightDiffCoefficent * weightDiff #Formel för att veta combatiblity från stanley papper
         return Delta < threshold #DET SKA VARA Self.THRESHOLD ELLER NGT HÄR
     
     def tworandomIndivids(self):
-        return random.choice(self.individer, k=2)
-
+        if len(self.individer) == 1: #Ifall det bara finns en indvid i arten får den inviden fortplanta med sig själv...
+            return self.best, self.best
+        n1, n2 = random.choice(self.individer, 2)
+        if n2.fitness > n1.fitness:
+            temp = n2
+            n2 = n1
+            n1 = temp        
+        return n1, n2
     def createChild(self, history):
         #Genome1 ska ha högre eller lika med fitness med genome2
         #KODEN UNDER ANVÄNDS FLERA GÅNGER OCH GÅR ANTAGLIGEN ATT GÖRA OM TILL EN FUNKTION
-        genome1, genome2 = self.tworandomIndivids()
-        genome1 = genome1.brain
+        genome1, genome2 = self.tworandomIndivids() #Tar två random grabbar
+        genome1 = genome1.brain #tar deras hjärnor
         genome2 = genome2.brain
-        genes1 = self.orderGenes(genome1.connections)
+        genes1 = self.orderGenes(genome1.connections) #Ordnar deras geneer
         genes2 = self.orderGenes(genome2.connections)
         highest = 0
+        if len(genes1) == 0 and len(genes2) == 0:
+            babyGenome = genome()
+            babyGenome.initalizeNetwork()
+            babyGenome.mutate(history)
+            baby = player(babyGenome)
+            return baby
+        elif len(genes1) == 0:
+            babyGenome = genome()
+            babyGenome.connections = genes2
+            babyGenome.nodes = genome2.nodes
+            babyGenome.nextnode = genome2.nextnode
+            babyGenome.mutate(history)
+            baby = player(babyGenome)
+            return baby
+        elif len(genes2) == 0:
+            babyGenome = genome()
+            babyGenome.connections = genes1
+            babyGenome.nodes = genome1.nodes
+            babyGenome.nextnode = genome1.nextnode
+            babyGenome.mutate(history)
+            baby = player(babyGenome)
+            return baby
+        
         if genes1[-1].innovationnumber >= genes2[-1].innovationnumber:
             #detta ger inte lower eftersom du kommer ha dem i array
             highest = genes1[-1].innovationnumber
@@ -155,7 +203,7 @@ class species():
             babyGenome = genome()
             babyGenome.connections = babyGenes
             babyGenome.nodes = genome1.nodes
-            babyGenome.mutate()
+            babyGenome.mutate(history)
             baby = player(babyGenome)
             return baby
 
@@ -169,7 +217,7 @@ class species():
         #https://stackoverflow.com/questions/50451570/how-to-divide-a-list-and-delete-half-of-it-in-python
         #Arten måste vara sorterad först
         if len(self.individer) != 1:
-            self.individer = self.individer[:len(list)//2]
+            self.individer = self.individer[:len(self.individer)//2]
         
 
     

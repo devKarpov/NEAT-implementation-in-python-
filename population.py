@@ -46,35 +46,37 @@ class population():
         return sum
     
     def tommaSpecies(self):
-        self.species = filter(lambda x: not (len(x.individer) == 0), self.species)
+        self.species = [x for x in self.species if not (len(x.individer) == 0)]
 
     def killDroppedOffSpecies(self):
-        self.species = filter(lambda x: not (x.dropOff == 15), self.species)
+        self.species = [x for x in self.species if not (x.dropOff == 15)]
 
     def killBadSpecies(self):
-        print(type(self.species))
         sum = self.averageFitnessSumma()
-        self.species = filter(lambda x: not (x.averageFitness()/sum * self.size < 1), self.species)
+        self.species = [x for x in self.species if not (x.averageFit/sum * self.size < 1)]
+
     def fitnessCalculation(self): #Göra fitnessharing här istället? Nej för då blir det anorlunda för antalet indivder här är större än vad det är senare
         #Räknar ut fitness från varje player
         #Nu ligger playersarna i arter så ugå inte från self.players
         for art in self.species:
             for individ in art.individer:
-                pass #calculate the fitness
+                individ.fitness = 1 + len(individ.brain.connections) * 100
             art.sorteraArt
+
     def nextGeneration(self):
         self.putInSpecies()
-        #Räkna ut fitness från varje player
-        self.sortSpecies()
+        self.fitnessCalculation()
         self.killHalfSpecies()
         self.tommaSpecies()
         self.killDroppedOffSpecies()
         self.killBadSpecies()
+        self.sortSpecies()
         barn = []
-        averageSum = self.averageFitnessSumma
+        averageSum = self.averageFitnessSumma()
         for art in self.species: #Du behöver ge innovationhistory
             barn.append(art.best)
             amountOfChildren = math.floor(art.averageFit/averageSum * self.size - 1) #mängden barn den arten får -1 för den bästa redan är i arten
+            print(amountOfChildren)
             j = 0
             for i in range(0, amountOfChildren): #Inte plus 1 för 0 är 0 lmao
                 barn.append(art.createChild(self.innoHistory))
@@ -88,5 +90,6 @@ class population():
     def startPopulation(self):
         startBrain = genome()
         startPlayer = player(startBrain)
+        startPlayer.brain.initalizeNetwork()
         self.players.append(startPlayer)
         self.nextGeneration()
