@@ -5,21 +5,24 @@ from connection import connection
 from history import connectionhistory
 import math
 import miscFuncs
-#kistory = connectionhistory()
+kistory = connectionhistory()
 genome1 = genome() #Kan du använda den här på flera och de syncar?
 genome1.inputnodes = 1
 genome1.initBiasNode()
 genome1.initInputNodes()
 genome1.initOutputNodes()
 
-genome1.makeReady
-genome1.mutateConnection()
-for i in range(1,100):
-    genome1.mutateConnection()
-    genome1.mutateNode()
+genome1.makeReady()
+genome1.mutateConnection(kistory)
+for i in range(1,5):
+    genome1.mutateConnection(kistory)
+    genome1.mutateNode(kistory)
     genome1.makeReady
 
+print(genome1.connections["0"])
 genome1.makeReady()
+array = []
+
 miscFuncs.drawNetwork(genome1)
 
 

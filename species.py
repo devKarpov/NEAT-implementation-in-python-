@@ -3,6 +3,7 @@ import random
 from genome import genome
 from history import connectionhistory
 from player import player
+import numpy.random
 class species():
     def __init__(self,best):
         self.best = best #Den bästa individen i artens genome
@@ -28,6 +29,7 @@ class species():
         
             
     def orderGenes(self, genes): #ger ordningen av generna där lägst innovationnumber går först, Gör till class variable
+        #Varför behövs den här när gensen är i en dictionary?
         sorted_genes = sorted(genes, key=lambda x: x.innovationnumber)
         return sorted_genes
     
@@ -39,10 +41,10 @@ class species():
         #Nu bör genes redan från början vara en dictionary?
         array = []
         for i in range(0, n+1):#Ska det vara n+1?
-            if genes[i]:
-                array.append[1]
+            if str(i) in genes:
+                array.append(1)
             else:
-                array.append[0]
+                array.append(0)
         return array
     #Engligt pappret ska du få alla disjoin genes totalt. Varesig de är från genome 1 eller 2.
     #Rent tekniskt så ifall du vet antalet excess genes borde du ganska lätt kunna räkna ut antalet disjoint genes
@@ -139,20 +141,21 @@ class species():
     def tworandomIndivids(self):
         if len(self.individer) == 1: #Ifall det bara finns en indvid i arten får den inviden fortplanta med sig själv...
             return self.best, self.best
-        n1, n2 = random.choice(self.individer, 2)
+        n1, n2 = numpy.random.choice(self.individer, 2)
         if n2.fitness > n1.fitness:
             temp = n2
             n2 = n1
             n1 = temp        
         return n1, n2
+
     def createChild(self, history):
         #Genome1 ska ha högre eller lika med fitness med genome2
         #KODEN UNDER ANVÄNDS FLERA GÅNGER OCH GÅR ANTAGLIGEN ATT GÖRA OM TILL EN FUNKTION
         genome1, genome2 = self.tworandomIndivids() #Tar två random grabbar
         genome1 = genome1.brain #tar deras hjärnor
         genome2 = genome2.brain
-        genes1 = self.orderGenes(genome1.connections) #Ordnar deras geneer
-        genes2 = self.orderGenes(genome2.connections)
+        genes1 = self.orderGenes(genome1.connections.values()) #Ordnar deras geneer
+        genes2 = self.orderGenes(genome2.connections.values())
         highest = 0
         if len(genes1) == 0 and len(genes2) == 0:
             babyGenome = genome()
@@ -162,7 +165,7 @@ class species():
             return baby
         elif len(genes1) == 0:
             babyGenome = genome()
-            babyGenome.connections = genes2
+            babyGenome.connections = genome2.connections
             babyGenome.nodes = genome2.nodes
             babyGenome.nextnode = genome2.nextnode
             babyGenome.mutate(history)
@@ -170,7 +173,7 @@ class species():
             return baby
         elif len(genes2) == 0:
             babyGenome = genome()
-            babyGenome.connections = genes1
+            babyGenome.connections = genome1.connections
             babyGenome.nodes = genome1.nodes
             babyGenome.nextnode = genome1.nextnode
             babyGenome.mutate(history)
@@ -186,7 +189,7 @@ class species():
         genes1 = self.createArray(genes1, highest)
         genes2 = self.createArray(genes2, highest)
         babyGenes = {}
-        for innonr, connection in genes1.items():
+        for innonr, connection in genes1:
             #Ska du bara ta random vikt från föräldrer om det matchar?
             if genes2[innonr] != None: #Betyder att det matchar
                 randomnr = random.choice([0, 1])

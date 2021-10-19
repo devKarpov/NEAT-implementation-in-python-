@@ -80,6 +80,7 @@ class genome():
         #KOLLA UPP LIST COMPREHENSIONS OCH LAMBDA
             
     def connectionExists(self, fromNodeId, toNodeId):
+        print(type(self.connections))
         for i in self.connections.values():
             if i.input == fromNodeId and i.output == toNodeId:
                 return True
@@ -192,10 +193,10 @@ class genome():
         
     def mutate(self,history):
         if random.random() < 0.8: #Mutera vikterna 80% av tiden
-            for connection in self.connections:
+            for connection in self.connections.values():
                 connection.mutate()
         
-        if random.random() < 0.05: #Mutera ny connection 5% av tiden
+        if random.random() < 1: #Mutera ny connection 5% av tiden
             self.mutateConnection(history)
         
         if random.random() < 0.01: #Mutera ny node 1% av tiden
