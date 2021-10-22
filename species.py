@@ -14,9 +14,10 @@ class species():
     def averageFitness(self): #Dividebyzero
         totalfitness = 0
         for individ in self.individer:
+            #print(individ.fitness)
             totalfitness += individ.fitness
         self.averageFit = totalfitness/(len(self.individer))
-    
+        #print(totalfitness)
     def sorteraArt(self): #Sorterar arten där högst fitness är först/ ökar också dropOff
         oldBest = self.best 
         sorted_species = sorted(self.individer, key=lambda x: x.fitness).reverse()        
@@ -58,24 +59,22 @@ class species():
         tgenes2 = self.orderGenes(genes1.values())
         highest = 0
         lower = 0
-        try:
-            if tgenes1[-1].innovationnumber >= genes2[-1].innovationnumber:
-                #detta ger inte lower eftersom du kommer ha dem i array
-                highest = tgenes1[-1].innovationnumber
-                lower = tgenes2[-1].innovationnumber
-            else:
-                highest = tgenes2[-1].innovationnumber
-                lower = tgenes1[-1].innovationnumber
-        except Exception as e:
-            print(e)
-            if len(tgenes1) == 0 and len(tgenes2) == 0:
-                return 0,0
-            elif len(tgenes1) == 0:
-                highest = tgenes1[-1].innovationnumber
-                lower = 0
-            elif len(tgenes2) == 0:
-                highest = tgenes2[-1].innovationnumber
-                lower = 0
+        if len(tgenes1) == 0 and len(tgenes2) == 0:
+            return 0,0
+        elif len(tgenes1) == 0:
+            highest = tgenes1[-1].innovationnumber
+            lower = 0
+        elif len(tgenes2) == 0:
+            highest = tgenes2[-1].innovationnumber
+            lower = 0
+        elif tgenes1[-1].innovationnumber >= genes2[-1].innovationnumber:
+            #detta ger inte lower eftersom du kommer ha dem i array
+            highest = tgenes1[-1].innovationnumber
+            lower = tgenes2[-1].innovationnumber
+        else:
+            highest = tgenes2[-1].innovationnumber
+            lower = tgenes1[-1].innovationnumber
+
         #Anta att du har två arrays
         genes1 = self.createArray(genes1, highest)
         genes2 = self.createArray(genes2, highest)
@@ -157,6 +156,7 @@ class species():
         genes1 = self.orderGenes(genome1.connections.values()) #Ordnar deras geneer
         genes2 = self.orderGenes(genome2.connections.values())
         highest = 0
+        #Behöver man ens ordra gensen? räcker det inte med len(genome1.connections)
         if len(genes1) == 0 and len(genes2) == 0:
             babyGenome = genome()
             babyGenome.initalizeNetwork()
@@ -186,19 +186,20 @@ class species():
         else:
             highest = genes2[-1].innovationnumber
         #Anta att du har två arrays
-        genes1 = self.createArray(genes1, highest)
-        genes2 = self.createArray(genes2, highest)
+        #genes1 = self.createArray(genes1, highest)
+        #genes2 = self.createArray(genes2, highest)
         babyGenes = {}
-        for innonr, connection in genes1:
+        for innonr in genome1.connections:
             #Ska du bara ta random vikt från föräldrer om det matchar?
-            if genes2[innonr] != None: #Betyder att det matchar
+            connection = genome1.connections[innonr]
+            if genome2.connections[innonr] != None: #Betyder att det matchar
                 randomnr = random.choice([0, 1])
                 #ta randomly någons vikt.
                 if randomnr == 0:
                     #ta från genome1
                     babyGenes[innonr] = connection
                 else:
-                    babyGenes[innonr] = genes2[innonr]
+                    babyGenes[innonr] = genome2.connections[innonr]
             else:
                 #Behåll alla genes från genome1
                 babyGenes[innonr] = connection
@@ -206,6 +207,8 @@ class species():
             babyGenome = genome()
             babyGenome.connections = babyGenes
             babyGenome.nodes = genome1.nodes
+            babyGenome.nextnode = genome1.nextnode
+            babyGenome.layers = genome1.layers
             babyGenome.mutate(history)
             baby = player(babyGenome)
             return baby

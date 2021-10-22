@@ -18,14 +18,16 @@ class population():
         #ta bort alla individer i arten
         #Best kommer inte försvinna för den är en enskild variabel
         for art in self.species:
-            self.individer = []
+            art.individer = []
         #Gå igenom varje player och kolla om de är kompatibel med någon av arterna annars blir det en ny art
         for player in self.players:
+            i = False
             for art in self.species:
                 if art.isCompatiable(player.brain):
                     art.individer.append(player)
                     break #Går till nästa player?
             #Ifall den kommer hit är den inte kompatibel med någon art så en ny måste skapas
+            
             nyArt = species(player)
             self.species.append(nyArt)
             
@@ -71,12 +73,15 @@ class population():
         self.killDroppedOffSpecies()
         self.killBadSpecies()
         self.sortSpecies()
+        for i in self.species:
+            pass
+            #print(i.averageFit)
         barn = []
         averageSum = self.averageFitnessSumma()
         for art in self.species: #Du behöver ge innovationhistory
             barn.append(art.best)
             amountOfChildren = math.floor(art.averageFit/averageSum * self.size - 1) #mängden barn den arten får -1 för den bästa redan är i arten
-            print(amountOfChildren)
+            #print(amountOfChildren)
             j = 0
             for i in range(0, amountOfChildren): #Inte plus 1 för 0 är 0 lmao
                 barn.append(art.createChild(self.innoHistory))
@@ -85,7 +90,8 @@ class population():
             antal = self.size - len(barn)
             for i in range(0,antal):
                 barn.append(bestArt.createChild(self.innoHistory))
-        self.individer = barn
+        self.players = barn
+        
 
     def startPopulation(self):
         startBrain = genome()

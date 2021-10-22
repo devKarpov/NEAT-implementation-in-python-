@@ -1,9 +1,16 @@
-    
-    
-players = [0,1,2,3,4,5]
-arts = [20,40,40]
-for player in players:
-    for art in arts:
-        if player == 1:
-            print("nu")
-             #Går till nästa player?
+from matplotlib import pyplot as plt
+from genome import genome
+from node import Node
+from connection import connection
+from history import connectionhistory
+import math
+import miscFuncs
+from population import population
+
+pop = population()
+
+pop.startPopulation()
+pop.nextGeneration()
+for i in pop.players:
+    if len(i.brain.connections) != 1:
+        print(miscFuncs.drawNetwork(i.brain))
