@@ -67,9 +67,10 @@ class population():
 
     def nextGeneration(self):
         self.putInSpecies()
+        self.tommaSpecies()
         self.fitnessCalculation()
         self.killHalfSpecies()
-        self.tommaSpecies()
+        #self.tommaSpecies() Här var den innan
         self.killDroppedOffSpecies()
         self.killBadSpecies()
         self.sortSpecies()

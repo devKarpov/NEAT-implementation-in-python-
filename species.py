@@ -4,6 +4,7 @@ from genome import genome
 from history import connectionhistory
 from player import player
 import numpy.random
+import copy
 class species():
     def __init__(self,best):
         self.best = best #Den bästa individen i artens genome
@@ -67,7 +68,7 @@ class species():
         elif len(tgenes2) == 0:
             highest = tgenes2[-1].innovationnumber
             lower = 0
-        elif tgenes1[-1].innovationnumber >= genes2[-1].innovationnumber:
+        elif tgenes1[-1].innovationnumber >= tgenes2[-1].innovationnumber:
             #detta ger inte lower eftersom du kommer ha dem i array
             highest = tgenes1[-1].innovationnumber
             lower = tgenes2[-1].innovationnumber
@@ -117,7 +118,7 @@ class species():
                 diff = abs(genes1[i] - genes2[i])
                 total += diff
         if count == 0: #Vad ska det bli om inga matchar? divide by zero
-            return None
+            return 100
         return total/count
 
     #Kollar ifall genome är kompatibel till den arten
@@ -153,17 +154,21 @@ class species():
         genome1, genome2 = self.tworandomIndivids() #Tar två random grabbar
         genome1 = genome1.brain #tar deras hjärnor
         genome2 = genome2.brain
+        print(genome1.nextnode)
+        print(genome2.nextnode)
         genes1 = self.orderGenes(genome1.connections.values()) #Ordnar deras geneer
         genes2 = self.orderGenes(genome2.connections.values())
         highest = 0
         #Behöver man ens ordra gensen? räcker det inte med len(genome1.connections)
         if len(genes1) == 0 and len(genes2) == 0:
+            print("TESTAR3")
             babyGenome = genome()
             babyGenome.initalizeNetwork()
             babyGenome.mutate(history)
             baby = player(babyGenome)
             return baby
         elif len(genes1) == 0:
+            print("TESTAR2")
             babyGenome = genome()
             babyGenome.connections = genome2.connections
             babyGenome.nodes = genome2.nodes
@@ -172,6 +177,7 @@ class species():
             baby = player(babyGenome)
             return baby
         elif len(genes2) == 0:
+            print("TESTAR1")
             babyGenome = genome()
             babyGenome.connections = genome1.connections
             babyGenome.nodes = genome1.nodes
@@ -179,7 +185,7 @@ class species():
             babyGenome.mutate(history)
             baby = player(babyGenome)
             return baby
-        
+        print("TESTAR")
         if genes1[-1].innovationnumber >= genes2[-1].innovationnumber:
             #detta ger inte lower eftersom du kommer ha dem i array
             highest = genes1[-1].innovationnumber
@@ -192,26 +198,30 @@ class species():
         for innonr in genome1.connections:
             #Ska du bara ta random vikt från föräldrer om det matchar?
             connection = genome1.connections[innonr]
-            if genome2.connections[innonr] != None: #Betyder att det matchar
+            if innonr in genome2.connections: #Betyder att det matchar
                 randomnr = random.choice([0, 1])
                 #ta randomly någons vikt.
                 if randomnr == 0:
                     #ta från genome1
-                    babyGenes[innonr] = connection
+                    babyGenes[innonr] = copy.deepcopy(connection)
                 else:
-                    babyGenes[innonr] = genome2.connections[innonr]
+                    babyGenes[innonr] = copy.deepcopy(genome2.connections[innonr])
             else:
                 #Behåll alla genes från genome1
-                babyGenes[innonr] = connection
+                babyGenes[innonr] = copy.deepcopy(connection)
             #Alla nodes från genome1 ges bara till barnet
-            babyGenome = genome()
-            babyGenome.connections = babyGenes
-            babyGenome.nodes = genome1.nodes
-            babyGenome.nextnode = genome1.nextnode
-            babyGenome.layers = genome1.layers
-            babyGenome.mutate(history)
-            baby = player(babyGenome)
-            return baby
+        babyGenome = genome()
+        babyGenome.connections = babyGenes
+        babyGenome.nodes = copy.deepcopy(genome1.nodes)
+        #DET ÄR FÖR DEN FORTPLANTAAR MED DET BÄSTA NÄTVERKET
+        babyGenome.nextnode = genome1.nextnode
+        #print(babyGenome.nextnode)
+        babyGenome.layers = genome1.layers
+        babyGenome.mutate(history)
+        #print(babyGenome.nextnode)
+        #print(len(babyGenome.nodes))
+        baby = player(babyGenome)
+        return baby
 
     def sharedFitness(self): #Förstår inte riktigt men tror detta gör att inte en art tar över hela populationen
         for individ in self.individer: #Försök göra detta på en radn för jag fattar inte hur man gör (how to run functon on attribute on all objects in list)

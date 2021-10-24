@@ -4,7 +4,7 @@ from history import connectionhistory
 from node import Node
 from connection import connection
 import random
-
+import miscFuncs
 class genome():
     def __init__(self):
         self.nextnode = 1
@@ -66,7 +66,8 @@ class genome():
             node.inputsum = 0 #Kanske ska vara None
             node.outconnections = []
     
-    def fullyConnected(self):
+    def fullyConnected(self): #Behövs inte längre
+        self.connectNodes() #Anledningen till detta är för jag tror att när en funktionen körs så är networket clearat såååå
         for node in self.nodes:#Går igenom varje node
             layer = node.layer
             antalConnections = len(node.outconnections) #Får antalet connections den noden har just nu
@@ -75,7 +76,9 @@ class genome():
                 if searchNode.layer > layer:
                     nodesEfter += 1
             if antalConnections != nodesEfter: #Ifall dessa två nummer inte är desamma betyder det att nätverket inte är fullt
+                self.clearNetwork()
                 return False
+        self.clearNetwork()
         return True
         #KOLLA UPP LIST COMPREHENSIONS OCH LAMBDA
             
@@ -147,7 +150,7 @@ class genome():
         length = len(self.connections) #GÅR INTE ATT MUTERA EN NODE MELLAN TVÅ NODES SOM INTE HAR CONNECTIONS
         if length == 0: #Betyder att det inte går att mutera
             return
-        tempList = list(self.connections.items()) #Långasmt?
+        tempList = list(self.connections.items()) #Långasmt? ska det ens vara list?
         innonr, randomConnection = random.choice(tempList) #Detta kanske går långsamt? du får en index
         self.connections[innonr].enabled = False #Måste den vara på från början för att det ska hända?
         fromNode = self.getNodeFromId(randomConnection.input)
@@ -172,9 +175,9 @@ class genome():
     def mutateConnection(self, history): #Detta är inte effektivt.
         #Hur kollar man så att det faktiskt går att göra en ny connection
         #Pick random from node and to node
-        if self.fullyConnected():
-            return 
         nodeDict = self.getNodeWithConnections() #En dictonary med Nodeid som index där value är ett table med alla möjliga connections den noden kan ha
+        if len(nodeDict) == 0: #Betyder att nätverket är fullt
+            return
         fromNode = random.choice(list(nodeDict))
         toNode = random.choice(nodeDict[fromNode])
         fromNode = self.getNodeFromId(int(fromNode))
@@ -195,10 +198,10 @@ class genome():
             for connection in self.connections.values():
                 connection.mutate()
         
-        if random.random() < 0.1: #Mutera ny connection 5% av tiden
+        if random.random() < 0.05: #Mutera ny connection 5% av tiden
             self.mutateConnection(history)
         
-        if random.random() < 0.05: #Mutera ny node 1% av tiden
+        if random.random() < 0.01: #Mutera ny node 1% av tiden
             self.mutateNode(history)
 
         
