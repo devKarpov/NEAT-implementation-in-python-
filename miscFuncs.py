@@ -54,5 +54,5 @@ def drawNetwork(genome):
 
 
 def printConnections(genome):
-    for key, connection in enumerate(genome.connections):
+    for connection in genome.connections.values():
         print(connection.input, "to", connection.output)

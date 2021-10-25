@@ -1,10 +1,11 @@
 #Hur många barn varje art ska ha fit (average fittness)/(average fitnessum (när det gäller alla arter)) * population size
 import math
+import random
 from species import species
 from history import connectionhistory
 from genome import genome
 from player import player
-
+import miscFuncs
 class population():
     def __init__(self):
         self.species = []
@@ -25,9 +26,11 @@ class population():
             for art in self.species:
                 if art.isCompatiable(player.brain):
                     art.individer.append(player)
+                    i = True
                     break #Går till nästa player?
+            if i:
+                continue
             #Ifall den kommer hit är den inte kompatibel med någon art så en ny måste skapas
-            
             nyArt = species(player)
             self.species.append(nyArt)
             
@@ -60,15 +63,24 @@ class population():
     def fitnessCalculation(self): #Göra fitnessharing här istället? Nej för då blir det anorlunda för antalet indivder här är större än vad det är senare
         #Räknar ut fitness från varje player
         #Nu ligger playersarna i arter så ugå inte från self.players
+        '''for art in self.species:
+            for individ in art.individer:
+                individ.fitness = 1 + len(individ.brain.connections) * 100 + random.random()
+            art.sorteraArt'''
+        
         for art in self.species:
             for individ in art.individer:
-                individ.fitness = 1 + len(individ.brain.connections) * 100
-            art.sorteraArt
+                try:
+                    if individ.correct > 3:
+                        individ.fitness = individ.correct * 100
+                except:
+                    individ.fitness = random.random() + 1
+            art.sorteraArt()
 
     def nextGeneration(self):
         self.putInSpecies()
         self.tommaSpecies()
-        self.fitnessCalculation()
+        self.fitnessCalculation() 
         self.killHalfSpecies()
         #self.tommaSpecies() Här var den innan
         self.killDroppedOffSpecies()
@@ -92,6 +104,7 @@ class population():
             for i in range(0,antal):
                 barn.append(bestArt.createChild(self.innoHistory))
         self.players = barn
+        #Här borde fitnessen clearas på alla indivder eftersom de bästa fortfarande har kvar sin fitness? 
         
 
     def startPopulation(self):

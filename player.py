@@ -1,4 +1,4 @@
 class player():
     def __init__(self, brain):
         self.brain = brain
-        self.fitness = 100
+        self.fitness = 1

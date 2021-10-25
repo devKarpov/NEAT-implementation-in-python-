@@ -22,19 +22,17 @@ specie.individer.append(baby1)
 specie.individer.append(baby2)
 #print(baby2.brain.nextnode)
 #print(baby1.brain.nextnode)
-miscFuncs.drawNetwork(baby1.brain)
-miscFuncs.drawNetwork(baby2.brain)
+#miscFuncs.drawNetwork(baby1.brain)
+#miscFuncs.drawNetwork(baby2.brain)
 baby3 = specie.createChild(history)
 specie.individer.append(baby3)
 
-for i in specie.individer:
-    for c in i.brain.connections.values():
-        pass
-        #print(c.weight)
-#for i in baby3.brain.nodes:
-#    print(i.id)
+print(baby3.brain.connections["0"].weight)
+for c in baby3.brain.connections.values():
+    c.weight = 5
+print(baby3.brain.connections["0"].weight)
 #print(len(baby3.brain.connections))
-miscFuncs.drawNetwork(baby3.brain)
+#miscFuncs.drawNetwork(baby3.brain)
 
 
 

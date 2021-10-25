@@ -17,22 +17,19 @@ pop.nextGeneration()
 pop.nextGeneration()
 pop.nextGeneration()
 pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
-pop.nextGeneration()
 
-for i in pop.players:
-    if len(i.brain.connections) != 0:
-        #pass
-        miscFuncs.drawNetwork(i.brain)
+lel = { }
+lel["1"] = 1
+for i in pop.species:
+    for l in i.individer:
+        if len(l.brain.connections) != 0:
+            g = l.brain
+        #g.makeReady()
+        #print(g.useNetwork(lel))
+            
+o = pop.innoHistory
+
+for innoNr,connection1 in enumerate(o.innovations):
+    print(innoNr, connection1[0], connection1[1])
+
+print(len(pop.species))

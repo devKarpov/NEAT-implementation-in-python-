@@ -11,7 +11,7 @@ class genome():
         #Kanske borde använad en dictonary för nodsen, även för connections?
         self.nodes = [] #Biasnoden ska ha sitt värde = 0, Detta är i ordningen nodesen har kommit in i nätverket
         self.connections = {} #Alla connections som det nuvarande nätverket har i sina gener, Detta är i ordningen connections har kommit in i nätverket
-        self.inputnodes = 1
+        self.inputnodes = 2
         self.outputnodes = 1
         self.layers = 2
         self.biasnode = None
@@ -110,6 +110,13 @@ class genome():
                     if node.layer == layer:
                         node.sendvalue(self)
         #Få outputNodsens values
+
+        #Clearar nodsen så funtkionen kan köras ien
+        for node in self.nodes:
+            if node.id == 0: #Inte om bias node
+                continue 
+            node.activationvalue = None
+            node.inputsum = 0 #Kanske ska vara None
         return outputNodesValue
 
 
@@ -156,8 +163,9 @@ class genome():
         fromNode = self.getNodeFromId(randomConnection.input)
         toNode = self.getNodeFromId(randomConnection.output)
         layer = fromNode.layer + 1
-        self.layers += 1
+        
         if fromNode.layer + 1 == toNode.layer:
+            self.layers += 1
             for node in self.nodes:
                 if node.layer > fromNode.layer:
                     node.layer += 1

@@ -5,6 +5,7 @@ from history import connectionhistory
 from player import player
 import numpy.random
 import copy
+import miscFuncs
 class species():
     def __init__(self,best):
         self.best = best #Den bästa individen i artens genome
@@ -15,19 +16,17 @@ class species():
     def averageFitness(self): #Dividebyzero
         totalfitness = 0
         for individ in self.individer:
-            #print(individ.fitness)
             totalfitness += individ.fitness
         self.averageFit = totalfitness/(len(self.individer))
-        #print(totalfitness)
     def sorteraArt(self): #Sorterar arten där högst fitness är först/ ökar också dropOff
         oldBest = self.best 
-        sorted_species = sorted(self.individer, key=lambda x: x.fitness).reverse()        
-        if sorted_species[0].fitness > self.best.fitness:
-            self.best = sorted_species[0]
+        self.individer.sort(key=lambda x: x.fitness, reverse=True)    
+        if self.individer[0].fitness > self.best.fitness:
+            self.best = self.individer[0]
             if self.best.fitness <= oldBest.fitness:
                 self.dropOff += 1
-        self.individer = sorted_species
-                
+        for i in self.individer:
+            print(i.fitness)     
         
             
     def orderGenes(self, genes): #ger ordningen av generna där lägst innovationnumber går först, Gör till class variable
@@ -54,46 +53,14 @@ class species():
     #Vad ifall du gör de två generna till en matris. Där raderna är genome1 och 2 och kolumner representerar en gene. Om en kolumn är 0 1 så betyder det att det är en disjoint.
     #Sen måste du lösa
     #utgå från att genes är sorterade
-    def findDisjoinGenes(self, genes1, genes2): 
+    def findDisjoinGenes(self, genes1, genes2): # på grund av att disjoint och excess har samma koeffcient behöver vi bara hitta totala mängden av båda och inte båda värdena enskilt 
         #vad ifall dem inte har några gener
-        tgenes1 = self.orderGenes(genes1.values())
-        tgenes2 = self.orderGenes(genes1.values())
-        highest = 0
-        lower = 0
-        if len(tgenes1) == 0 and len(tgenes2) == 0:
-            return 0,0
-        elif len(tgenes1) == 0:
-            highest = tgenes1[-1].innovationnumber
-            lower = 0
-        elif len(tgenes2) == 0:
-            highest = tgenes2[-1].innovationnumber
-            lower = 0
-        elif tgenes1[-1].innovationnumber >= tgenes2[-1].innovationnumber:
-            #detta ger inte lower eftersom du kommer ha dem i array
-            highest = tgenes1[-1].innovationnumber
-            lower = tgenes2[-1].innovationnumber
-        else:
-            highest = tgenes2[-1].innovationnumber
-            lower = tgenes1[-1].innovationnumber
-
-        #Anta att du har två arrays
-        genes1 = self.createArray(genes1, highest)
-        genes2 = self.createArray(genes2, highest)
-        disjoint = 0
-        excess = 0
-        excessState = False
-        for i in range(0,highest+ 1): #Ska det vara +1?
-
-            if genes1[i] != genes2[i]:
-                if excessState:
-                    excess += 1
-                    continue
-                else:
-                    disjoint += 1
-            if i == lower: 
-                excessState = True
-        return disjoint, excess
-
+        matching = 0
+        for nr in genes1:
+            if nr in genes2: #Betyder att båda har samma gen om det är true
+                matching += 1
+        disex = (len(genes1) - matching) + (len(genes2) - matching)
+        return disex
 #Lär finnas något mycket bättre sätt
 
     def weightDifference(self, genes1, genes2):
@@ -110,32 +77,34 @@ class species():
         else:
             lower = tgenes1[-1].innovationnumber
         #Anta att du har två arrays
-        genes1 = self.createArray(genes1, lower)
-        genes2 = self.createArray(genes2, lower)
-        for i in range(0, lower + 1):
-            if genes1[i] == genes2[i] and genes1[i] != 0:
+        for nr in genes1:
+            if nr in genes2: #Betyder att båda har samma gen om det är true
                 count += 1
-                diff = abs(genes1[i] - genes2[i])
+                diff = abs(genes1[nr].weight - genes2[nr].weight)
                 total += diff
         if count == 0: #Vad ska det bli om inga matchar? divide by zero
             return 100
+        #print(total/count)
         return total/count
 
     #Kollar ifall genome är kompatibel till den arten
     def isCompatiable(self, testGenome):
         sGenome = self.best.brain
-        disjoint, excess = self.findDisjoinGenes(sGenome.connections, testGenome.connections)
+        disex = self.findDisjoinGenes(sGenome.connections, testGenome.connections)
         weightDiff = self.weightDifference(sGenome.connections, testGenome.connections) #Spelar ordningen roll?
-        threshold = 0.6
-        disjointCoefficent = 2
-        excessCoefficent = 2
+        threshold = 3
+        disExcCoefficent = 2
         weightDiffCoefficent = 1
         factorN = 1
         if len(sGenome.connections) < 20 and len(testGenome.connections) < 20:
             factorN = 1 #the factor N, the number of genes in the larger genome, normalizes for genome size (N can be set to 1 if both genomes are small, i.e., consist of fewer than 20 genes). 
         else: 
             factorN = "Lös det här"
-        Delta = ((excessCoefficent * excess)/factorN) + ((disjointCoefficent * disjoint)/factorN) + weightDiffCoefficent * weightDiff #Formel för att veta combatiblity från stanley papper
+        Delta = ((disExcCoefficent * disex)/factorN) + weightDiffCoefficent * weightDiff #Formel för att veta combatiblity från stanley papper
+        if Delta > threshold:
+            pass
+            #print(disExcCoefficent * disex)
+            #print(weightDiffCoefficent * weightDiff, "d")
         return Delta < threshold #DET SKA VARA Self.THRESHOLD ELLER NGT HÄR
     
     def tworandomIndivids(self):
@@ -154,14 +123,13 @@ class species():
         genome1, genome2 = self.tworandomIndivids() #Tar två random grabbar
         genome1 = genome1.brain #tar deras hjärnor
         genome2 = genome2.brain
-        print(genome1.nextnode)
-        print(genome2.nextnode)
         genes1 = self.orderGenes(genome1.connections.values()) #Ordnar deras geneer
         genes2 = self.orderGenes(genome2.connections.values())
         highest = 0
         #Behöver man ens ordra gensen? räcker det inte med len(genome1.connections)
         if len(genes1) == 0 and len(genes2) == 0:
             print("TESTAR3")
+            #miscFuncs.drawNetwork(genome1)
             babyGenome = genome()
             babyGenome.initalizeNetwork()
             babyGenome.mutate(history)
@@ -170,8 +138,9 @@ class species():
         elif len(genes1) == 0:
             print("TESTAR2")
             babyGenome = genome()
-            babyGenome.connections = genome2.connections
-            babyGenome.nodes = genome2.nodes
+            babyGenome.connections = copy.deepcopy(genome2.connections)
+            babyGenome.nodes = copy.deepcopy(genome2.nodes)
+            babyGenome.layers = genome2.layers
             babyGenome.nextnode = genome2.nextnode
             babyGenome.mutate(history)
             baby = player(babyGenome)
@@ -179,13 +148,13 @@ class species():
         elif len(genes2) == 0:
             print("TESTAR1")
             babyGenome = genome()
-            babyGenome.connections = genome1.connections
-            babyGenome.nodes = genome1.nodes
+            babyGenome.connections = copy.deepcopy(genome1.connections)
+            babyGenome.nodes = copy.deepcopy(genome1.nodes)
+            babyGenome.layers = genome1.layers
             babyGenome.nextnode = genome1.nextnode
             babyGenome.mutate(history)
             baby = player(babyGenome)
             return baby
-        print("TESTAR")
         if genes1[-1].innovationnumber >= genes2[-1].innovationnumber:
             #detta ger inte lower eftersom du kommer ha dem i array
             highest = genes1[-1].innovationnumber
@@ -215,11 +184,9 @@ class species():
         babyGenome.nodes = copy.deepcopy(genome1.nodes)
         #DET ÄR FÖR DEN FORTPLANTAAR MED DET BÄSTA NÄTVERKET
         babyGenome.nextnode = genome1.nextnode
-        #print(babyGenome.nextnode)
+        #Kan vara layers som är problemet
         babyGenome.layers = genome1.layers
         babyGenome.mutate(history)
-        #print(babyGenome.nextnode)
-        #print(len(babyGenome.nodes))
         baby = player(babyGenome)
         return baby
 
