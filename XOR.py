@@ -26,10 +26,8 @@ i = True
 while i:
     shuffled = random.sample(xor,4)
     for player in pop.players:
-        if len(player.brain.connections) == 0:
-            player.fitness = 1
-            continue
-        player.fitness = 1
+        outputs = []
+        player.fitness = 4
         player.correct = 0
         for bits in shuffled:
             bit1 = bits[0]
@@ -40,16 +38,24 @@ while i:
             input["2"] = bit2
             brain = player.brain  
             brain.makeReady()
-            output = int(round(brain.useNetwork(input)[0]))
-            if output == answer:
-                player.correct += 1
-        player.percent = player.correct/4
-        if player.percent != 0.5:
-            print(player.percent)
-        if player.percent == 1:
-            i = False
-            miscFuncs.drawNetwork(player.brain)
-    #print(gen)
+            output = brain.useNetwork(input)[0]
+            outputs.append(output)
+            #print(output)
+        for i in range(0,4):
+            #print(shuffled[i][2] - outputs[i])
+            player.fitness -= (outputs[i] - shuffled[i][2]) ** 2
+        print(player.fitness)
+        if player.fitness > 3.4:
+            
+            input = {}
+            input["1"] = 1
+            input["2"] = 1
+            output = brain.useNetwork(input)[0]
+            print(output)
+            print(gen)
+            miscFuncs.drawNetwork(brain)
     pop.nextGeneration()
     gen += 1
 
+
+#1−∑i(ei−ai)2 e expected | a acutal

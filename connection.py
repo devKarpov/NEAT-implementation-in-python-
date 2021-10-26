@@ -12,14 +12,14 @@ class connection():
     #Frågan är hur man ska mutera vikterna
     #Vikterna ska vara mellan -1 och 1
     #https://stackoverflow.com/questions/3679694/a-weighted-version-of-random-choice Random choice med sannolikhet
-    def mutate(self): #Med detta system kommer varenda vikt i ett nätverk gå igenom denna funktion. Det betyder att 
+    '''def mutate(self): #Med detta system kommer varenda vikt i ett nätverk gå igenom denna funktion. Det betyder att 
         randomInt = random.randint(0, 10)
         if randomInt <= 9: # 90% av tiden 
             choices = [self.normalMutation(), self.signChange(), self.diffMutate(), self.completeChange(), self.weight]
             probability = [0.7, 0.05, 0.1, 0.1, 0.05]
             weight = numpy.random.choice(choices, p=probability)
             self.weight = weight
-
+'''
     def normalMutation(self):
         randomfloat = round(random.uniform(0.5, 1.5),2 ) #Hur mycket ska man avrunda?
         value = self.weight * randomfloat
@@ -38,4 +38,13 @@ class connection():
     def completeChange(self):
         value = round(random.uniform(-1, 1),2 )
         return value
-            
+    def mutate(self):
+        rand = random.random()
+        if rand < 0.1: #ändra vikten helt
+            self.weight = random.uniform(-1, 1) 
+        else:
+            self.weight += random.gauss(0,1)
+        if self.weight > 1:
+            self.weight = 1
+        if self.weight < -1:
+            self.weight = -1

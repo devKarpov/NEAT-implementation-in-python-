@@ -1,4 +1,5 @@
 #Hur många barn varje art ska ha fit (average fittness)/(average fitnessum (när det gäller alla arter)) * population size
+import copy
 import math
 import random
 from species import species
@@ -36,7 +37,7 @@ class population():
             
     
     def sortSpecies(self): #Sorts species by fitness
-        self.species = sorted(self.species, key=lambda x: (x.averageFit), reverse=True)
+        self.species.sort(key=lambda x: (x.averageFit), reverse=True)
 
     def killHalfSpecies(self):
         for art in self.species:#T
@@ -69,12 +70,13 @@ class population():
             art.sorteraArt'''
         
         for art in self.species:
-            for individ in art.individer:
+            '''for individ in art.individer:
                 try:
                     if individ.correct > 3:
                         individ.fitness = individ.correct * 100
                 except:
                     individ.fitness = random.random() + 1
+            '''
             art.sorteraArt()
 
     def nextGeneration(self):
@@ -92,7 +94,7 @@ class population():
         barn = []
         averageSum = self.averageFitnessSumma()
         for art in self.species: #Du behöver ge innovationhistory
-            barn.append(art.best)
+            barn.append(copy.deepcopy(art.best))
             amountOfChildren = math.floor(art.averageFit/averageSum * self.size - 1) #mängden barn den arten får -1 för den bästa redan är i arten
             #print(amountOfChildren)
             j = 0

@@ -22,17 +22,18 @@ class species():
         oldBest = self.best 
         self.individer.sort(key=lambda x: x.fitness, reverse=True)    
         if self.individer[0].fitness > self.best.fitness:
-            self.best = self.individer[0]
+            print("true")
+            self.best = copy.deepcopy(self.individer[0]) #Är inte riktigt säker på om detta behövs?
             if self.best.fitness <= oldBest.fitness:
                 self.dropOff += 1
-        for i in self.individer:
-            print(i.fitness)     
+        
         
             
-    def orderGenes(self, genes): #ger ordningen av generna där lägst innovationnumber går först, Gör till class variable
-        #Varför behövs den här när gensen är i en dictionary?
-        sorted_genes = sorted(genes, key=lambda x: x.innovationnumber)
-        return sorted_genes
+   # def orderGenes(self, genes): #ger ordningen av generna där lägst innovationnumber går först, Gör till class variable
+    #    #Varför behövs den här när gensen är i en dictionary?
+     #   sorted_genes = copy.deepcopy(genes)
+      #  sorted_genes.sort(key=lambda x: x.innovationnumber, reverse=False) 
+       # return sorted_genes
     
     def createArray(self, genes, n):
         #geneDict = {}
@@ -66,17 +67,9 @@ class species():
     def weightDifference(self, genes1, genes2):
         count = 0
         total = 0
-        tgenes1 = self.orderGenes(genes1.values())
-        tgenes2 = self.orderGenes(genes1.values())
         lower = 0
-        if len(tgenes1) == 0 or len(tgenes2) == 0: #går kanske att lägga ovanför?
+        if len(genes1) == 0 or len(genes1) == 0: #går kanske att lägga ovanför?
                 return 0
-        if tgenes1[-1].innovationnumber >= tgenes2[-1].innovationnumber:
-            #detta ger inte lower eftersom du kommer ha dem i array
-            lower = tgenes2[-1].innovationnumber
-        else:
-            lower = tgenes1[-1].innovationnumber
-        #Anta att du har två arrays
         for nr in genes1:
             if nr in genes2: #Betyder att båda har samma gen om det är true
                 count += 1
@@ -99,7 +92,10 @@ class species():
         if len(sGenome.connections) < 20 and len(testGenome.connections) < 20:
             factorN = 1 #the factor N, the number of genes in the larger genome, normalizes for genome size (N can be set to 1 if both genomes are small, i.e., consist of fewer than 20 genes). 
         else: 
-            factorN = "Lös det här"
+            if len(sGenome.connections) < len(testGenome.connections):
+                factorN = len(testGenome.connections)
+            else:
+                factorN = len(sGenome.connections)
         Delta = ((disExcCoefficent * disex)/factorN) + weightDiffCoefficent * weightDiff #Formel för att veta combatiblity från stanley papper
         if Delta > threshold:
             pass
@@ -117,14 +113,31 @@ class species():
             n1 = temp        
         return n1, n2
 
+    def selectPlayer(self):
+        fitnessSum = 0
+        for i in self.individer:
+            fitnessSum += i.fitness
+
+        randomFloat = random.uniform(0, fitnessSum)
+        runSum = 0
+        for i in self.individer:
+            runSum += i.fitness
+            if runSum > randomFloat:
+                return i
     def createChild(self, history):
         #Genome1 ska ha högre eller lika med fitness med genome2
         #KODEN UNDER ANVÄNDS FLERA GÅNGER OCH GÅR ANTAGLIGEN ATT GÖRA OM TILL EN FUNKTION
-        genome1, genome2 = self.tworandomIndivids() #Tar två random grabbar
+        #genome1, genome2 = self.tworandomIndivids() #Tar två random grabbar
+        genome1 = self.selectPlayer()
+        genome2 = self.selectPlayer()
+        if genome1.fitness < genome2.fitness:
+            temp = genome1
+            genome1 = genome2
+            genome2 = temp
         genome1 = genome1.brain #tar deras hjärnor
         genome2 = genome2.brain
-        genes1 = self.orderGenes(genome1.connections.values()) #Ordnar deras geneer
-        genes2 = self.orderGenes(genome2.connections.values())
+        genes1 = genome1.connections #Ordnar deras geneer
+        genes2 = genome2.connections
         highest = 0
         #Behöver man ens ordra gensen? räcker det inte med len(genome1.connections)
         if len(genes1) == 0 and len(genes2) == 0:
@@ -155,11 +168,11 @@ class species():
             babyGenome.mutate(history)
             baby = player(babyGenome)
             return baby
-        if genes1[-1].innovationnumber >= genes2[-1].innovationnumber:
-            #detta ger inte lower eftersom du kommer ha dem i array
-            highest = genes1[-1].innovationnumber
-        else:
-            highest = genes2[-1].innovationnumber
+        #if genes1[-1].innovationnumber >= genes2[-1].innovationnumber:
+        #    #detta ger inte lower eftersom du kommer ha dem i array
+        #    highest = genes1[-1].innovationnumber
+        #else:
+        #    highest = genes2[-1].innovationnumber
         #Anta att du har två arrays
         #genes1 = self.createArray(genes1, highest)
         #genes2 = self.createArray(genes2, highest)

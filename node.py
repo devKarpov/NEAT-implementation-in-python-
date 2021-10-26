@@ -11,14 +11,23 @@ class Node():
 
 
     def sigmoid(self):
-        return 1/(1 + (math.exp(-self.inputsum)))
-
+        #VIKTERNA BLIR SKIT HÖGA
+        z = self.inputsum
+        #print(self.inputsum)
+        #return 1/(1 + (math.exp(-self.inputsum)))
+        z = max(-60.0, min(60.0, 5.0 * z))
+        return 1.0 / (1.0 + math.exp(-z))
     def sendvalue(self, genome): 
-        activationvalue = self.sigmoid()
+        if self.layer != 1:
+            activationvalue = self.sigmoid()
+        else:
+            activationvalue = self.inputsum
         for connection in self.outconnections:  #Går igenom all utgående connections för denna noden och skicka ut activationvalue * vikt
             if connection.enabled: #Ifall den inte är enabled så skicka inte
                 nodeid = connection.output
                 weight = connection.weight
+                if weight > 5:
+                    print(weight)
                 node = genome.getNodeFromId(nodeid)
                 node.inputsum += weight * activationvalue 
 #1,7310
