@@ -9,3 +9,5 @@ När man ska mutera in connections behövs ingenting göras men om man ska muter
 Kolla när en connection redan finns vid mutateconnection
 
 Vad ifall du kunde behålla data från förut men bara lägga till. Till exempel vid mutationer så du slipper gå igenom alla connections igen osv.
+
+Resetas fitnessen?

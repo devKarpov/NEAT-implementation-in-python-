@@ -44,15 +44,18 @@ while i:
         for i in range(0,4):
             #print(shuffled[i][2] - outputs[i])
             player.fitness -= (outputs[i] - shuffled[i][2]) ** 2
-        print(player.fitness)
-        if player.fitness > 3.4:
-            
+        #print(player.fitness)
+        if player.fitness > 3.8:
+            for i in pop.innoHistory.innovations:
+                print(i[0], " to ", i[1])
             input = {}
             input["1"] = 1
             input["2"] = 1
             output = brain.useNetwork(input)[0]
             print(output)
             print(gen)
+            miscFuncs.drawNetwork(brain)
+        if gen == 100:
             miscFuncs.drawNetwork(brain)
     pop.nextGeneration()
     gen += 1

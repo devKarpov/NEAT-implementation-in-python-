@@ -2,7 +2,9 @@ import random
 import numpy.random
 #Anta att vikten ligger mellan -1 och 1
 class connection():
+    
     def __init__(self, input, output, innonr):
+        self.max_weight = 1000
         self.input = input
         self.output = output
         self.weight = 1
@@ -44,7 +46,7 @@ class connection():
             self.weight = random.uniform(-1, 1) 
         else:
             self.weight += random.gauss(0,1)
-        if self.weight > 1:
-            self.weight = 1
-        if self.weight < -1:
-            self.weight = -1
+        if self.weight > self.max_weight:
+            self.weight = self.max_weight
+        if self.weight < -self.max_weight:
+            self.weight = -self.max_weight

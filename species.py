@@ -25,7 +25,7 @@ class species():
             print("true")
             self.best = copy.deepcopy(self.individer[0]) #Är inte riktigt säker på om detta behövs?
             if self.best.fitness <= oldBest.fitness:
-                self.dropOff += 1
+                self.dropOff += 0
         
         
             
@@ -212,8 +212,15 @@ class species():
         #https://stackoverflow.com/questions/15715912/remove-the-last-n-elements-of-a-list
         #https://stackoverflow.com/questions/50451570/how-to-divide-a-list-and-delete-half-of-it-in-python
         #Arten måste vara sorterad först
-        if len(self.individer) != 1:
-            self.individer = self.individer[:len(self.individer)//2]
+        #https://stackoverflow.com/questions/39471676/how-to-randomly-remove-a-percentage-of-items-from-a-list
+        x = 0.2 #fraction to remove
+        frac = 1 - x #Fraction to remove from list
+        inds = set(random.sample(list(range(len(self.individer))), int(frac*len(self.individer))))
+
+        self.individer = [n for i,n in enumerate(self.individer) if i not in inds]
+
+        #if len(self.individer) != 1:
+        #    self.individer = self.individer[:len(self.individer)//2]
         
 
     

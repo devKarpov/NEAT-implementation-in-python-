@@ -89,8 +89,8 @@ class population():
         self.killBadSpecies()
         self.sortSpecies()
         for i in self.species:
-            pass
-            #print(i.averageFit)
+            #pass
+            print(i.averageFit)
         barn = []
         averageSum = self.averageFitnessSumma()
         for art in self.species: #Du behöver ge innovationhistory

@@ -14,7 +14,6 @@ class genome():
         self.inputnodes = 2
         self.outputnodes = 1
         self.layers = 2
-        self.biasnode = None
     
     def getOutputconnections(self, nodeId): #Ger alla enabled connections som en node ska skicka till
         connections = [] #Connections funktionen ska returna
@@ -34,7 +33,6 @@ class genome():
         bias = Node(0, 1)
         bias.inputsum = 1
         self.nodes.append(bias)
-        self.biasnode = bias
     
     def initOutputNodes(self): #Känns som man borde kunna göra det här efter man har init gömda nodsen för att spara på prestanda, Körs egentligne
         for i in range(1, self.outputnodes + 1): #Sätter nextnode som värdet på varje output node och skapar nya nodes med layer = 2 eftersom det är output layer
@@ -210,7 +208,8 @@ class genome():
             self.mutateConnection(history)
         
         if random.random() < 0.01: #Mutera ny node 1% av tiden
-            self.mutateNode(history)
+            if len(self.nodes) < 5:
+                self.mutateNode(history)
 
         
 
