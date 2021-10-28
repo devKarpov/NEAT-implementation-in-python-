@@ -26,8 +26,8 @@ class Node():
             if connection.enabled: #Ifall den inte är enabled så skicka inte
                 nodeid = connection.output
                 weight = connection.weight
-                if weight > 5:
-                    print(weight)
+                #if weight > 5:
+                    #print(weight)
                 node = genome.getNodeFromId(nodeid)
                 node.inputsum += weight * activationvalue 
 #1,7310

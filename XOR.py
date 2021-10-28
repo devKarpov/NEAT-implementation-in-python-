@@ -45,7 +45,7 @@ while i:
             #print(shuffled[i][2] - outputs[i])
             player.fitness -= (outputs[i] - shuffled[i][2]) ** 2
         #print(player.fitness)
-        if player.fitness > 3.5:
+        if player.fitness > 3.99:
             for i in pop.innoHistory.innovations:
                 print(i[0], " to ", i[1])
             input = {}
@@ -82,3 +82,5 @@ while i:
 #Antagligen är problemet att den inte utvecklas tillräckligt snabbt
 #Testa att öka dropoff
 #1−∑i(ei−ai)2 e expected | a acutal
+
+#Jag har kommit fram till att det är möjligt att få en 3.95 lösning med två extra noder (3.96 hittades också med 2 noder) (3.97) (3.98 också) (3.99)
