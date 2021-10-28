@@ -208,8 +208,8 @@ class genome():
             self.mutateConnection(history)
         
         if random.random() < 0.01: #Mutera ny node 1% av tiden
-            if len(self.nodes) < 5:
-                self.mutateNode(history)
+            #if len(self.nodes) < 5:
+            self.mutateNode(history)
 
         
 

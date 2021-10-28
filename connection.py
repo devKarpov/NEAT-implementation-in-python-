@@ -4,7 +4,7 @@ import numpy.random
 class connection():
     
     def __init__(self, input, output, innonr):
-        self.max_weight = 1000
+        self.max_weight = 30
         self.input = input
         self.output = output
         self.weight = 1

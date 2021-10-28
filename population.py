@@ -13,6 +13,7 @@ class population():
         self.innoHistory = connectionhistory()
         self.players = []
         self.size = 50
+        self.dropoffrate = 50
     #Du behövder egentligen bara göra all evolution och sånt efter population i den nurvarande generationen har dött
     #Dela upp spelarna i art
     
@@ -55,7 +56,7 @@ class population():
         self.species = [x for x in self.species if not (len(x.individer) == 0)]
 
     def killDroppedOffSpecies(self):
-        self.species = [x for x in self.species if not (x.dropOff == 15)]
+        self.species = [x for x in self.species if not (x.dropOff == self.dropoffrate)]
 
     def killBadSpecies(self):
         sum = self.averageFitnessSumma()

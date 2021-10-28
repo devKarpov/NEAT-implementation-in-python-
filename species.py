@@ -6,6 +6,7 @@ from player import player
 import numpy.random
 import copy
 import miscFuncs
+import math
 class species():
     def __init__(self,best):
         self.best = best #Den bästa individen i artens genome
@@ -25,7 +26,7 @@ class species():
             print("true")
             self.best = copy.deepcopy(self.individer[0]) #Är inte riktigt säker på om detta behövs?
             if self.best.fitness <= oldBest.fitness:
-                self.dropOff += 0
+                self.dropOff += 1
         
         
             
@@ -213,12 +214,19 @@ class species():
         #https://stackoverflow.com/questions/50451570/how-to-divide-a-list-and-delete-half-of-it-in-python
         #Arten måste vara sorterad först
         #https://stackoverflow.com/questions/39471676/how-to-randomly-remove-a-percentage-of-items-from-a-list
-        x = 0.2 #fraction to remove
-        frac = 1 - x #Fraction to remove from list
-        inds = set(random.sample(list(range(len(self.individer))), int(frac*len(self.individer))))
 
-        self.individer = [n for i,n in enumerate(self.individer) if i not in inds]
+        #den här funktionen tar bort 80% av alla arter indvider i arten oberonde av fitness 
+        maxAntal = 2
+        frac = 0.2
 
+        antal = len(self.individer)
+
+        haKvar = math.ceil(frac * antal)
+
+        if haKvar == 1: #Så den bästa indivden har någon att fortplanta med
+            haKvar = maxAntal
+
+        self.individer = self.individer[:haKvar]
         #if len(self.individer) != 1:
         #    self.individer = self.individer[:len(self.individer)//2]
         

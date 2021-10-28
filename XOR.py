@@ -45,20 +45,40 @@ while i:
             #print(shuffled[i][2] - outputs[i])
             player.fitness -= (outputs[i] - shuffled[i][2]) ** 2
         #print(player.fitness)
-        if player.fitness > 3.8:
+        if player.fitness > 3.5:
             for i in pop.innoHistory.innovations:
                 print(i[0], " to ", i[1])
             input = {}
             input["1"] = 1
             input["2"] = 1
-            output = brain.useNetwork(input)[0]
-            print(output)
+            output1 = brain.useNetwork(input)[0]
+
+            input["1"] = 0
+            input["2"] = 0
+            output2 = brain.useNetwork(input)[0]
+
+            input["1"] = 0
+            input["2"] = 1
+            output3 = brain.useNetwork(input)[0]
+
+            input["1"] = 1
+            input["2"] = 0
+            output4 = brain.useNetwork(input)[0]
+            print(output1)
+            print(output2)
+            print(output3)
+            print(output4)
             print(gen)
             miscFuncs.drawNetwork(brain)
-        if gen == 100:
-            miscFuncs.drawNetwork(brain)
+        #if gen == 100:
+        #    miscFuncs.drawNetwork(brain)
     pop.nextGeneration()
     gen += 1
 
 
+#Den håller på väldigt länge med att inte ha gener överhuvudtaget
+#Gör om så när den muterar nodes så får de två nya connections samma vikt som den disablade
+#Du har fortfarande igång så den inte kan mutera mer än en node
+#Antagligen är problemet att den inte utvecklas tillräckligt snabbt
+#Testa att öka dropoff
 #1−∑i(ei−ai)2 e expected | a acutal
