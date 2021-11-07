@@ -7,7 +7,7 @@ class connection():
         self.max_weight = 30
         self.input = input
         self.output = output
-        self.weight = 1
+        self.weight = random.uniform(-1,1)
         self.enabled = True
         self.innovationnumber = innonr
     #Testa det här https://stackoverflow.com/questions/31708478/how-to-evolve-weights-of-a-neural-network-in-neuroevolution

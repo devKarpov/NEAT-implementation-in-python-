@@ -20,15 +20,17 @@ class species():
             totalfitness += individ.fitness
         self.averageFit = totalfitness/(len(self.individer))
     def sorteraArt(self): #Sorterar arten där högst fitness är först/ ökar också dropOff
-        oldBest = self.best 
         self.individer.sort(key=lambda x: x.fitness, reverse=True)    
         if self.individer[0].fitness > self.best.fitness:
-            print("true")
+            self.dropOff = 0
             self.best = copy.deepcopy(self.individer[0]) #Är inte riktigt säker på om detta behövs?
-            if self.best.fitness <= oldBest.fitness:
-                self.dropOff += 1
+        else:
+            self.dropOff += 1
         
-        
+    def sharedFitness(self): #Förstår inte riktigt men tror detta gör att inte en art tar över hela populationen
+        for individ in self.individer: #Försök göra detta på en radn för jag fattar inte hur man gör (how to run functon on attribute on all objects in list)
+            individ.fitness = individ.fitness/len(self.individer)
+
             
    # def orderGenes(self, genes): #ger ordningen av generna där lägst innovationnumber går först, Gör till class variable
     #    #Varför behövs den här när gensen är i en dictionary?
@@ -87,8 +89,8 @@ class species():
         disex = self.findDisjoinGenes(sGenome.connections, testGenome.connections)
         weightDiff = self.weightDifference(sGenome.connections, testGenome.connections) #Spelar ordningen roll?
         threshold = 3
-        disExcCoefficent = 2
-        weightDiffCoefficent = 1
+        disExcCoefficent = 1
+        weightDiffCoefficent = 0.5
         factorN = 1
         if len(sGenome.connections) < 20 and len(testGenome.connections) < 20:
             factorN = 1 #the factor N, the number of genes in the larger genome, normalizes for genome size (N can be set to 1 if both genomes are small, i.e., consist of fewer than 20 genes). 
@@ -204,9 +206,6 @@ class species():
         baby = player(babyGenome)
         return baby
 
-    def sharedFitness(self): #Förstår inte riktigt men tror detta gör att inte en art tar över hela populationen
-        for individ in self.individer: #Försök göra detta på en radn för jag fattar inte hur man gör (how to run functon on attribute on all objects in list)
-            individ.fitness = individ.fitness/len(self.individer)
 
     def killHalf(self): #Dödar den sämre halvan av arten. Leta efter ett mer systematiskt sätt att döda av arten
         #Problemet med det här är att det kommer döda arter där det finns en kvar

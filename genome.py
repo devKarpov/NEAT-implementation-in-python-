@@ -46,7 +46,9 @@ class genome():
         self.initOutputNodes()
     
     def getNodeFromId(self, id): #Säger säg självt
-        return self.nodes[id]
+        for node in self.nodes:
+            if node.id == id:
+                return node
     
     def connectNodes(self): # Går igenom alla connections som genome har och ger de relevanta connectionsarna till nodsen.
         for connection in self.connections.values():
@@ -198,18 +200,32 @@ class genome():
         newconnection = connection(fromNode.id, toNode.id, innovationnumber) # Du måste sätta en random vikt på connectionen också
         self.connections[str(innovationnumber)] = newconnection
 
-        
+    def mutateRemoveNode(self): #Tar bort en node och alla connections som har med den noden att göra
+        i = True
+        randomNode = None
+        while i:
+            randomNode = random.choice(self.nodes)
+            if randomNode.layer == 1 or randomNode.layer == self.layers: #Ifall det är output nodes eller inputnodes
+                continue
+            i = False
+        id = randomNode.id
+        self.nodes.remove(randomNode) #Tar bort den noden från node listan, tror att det funkar...
+        #Tar bort alla connections som är kopplat till den noden
+        print(type(self.connections))
+        self.connections = {key:val for key, val in self.connections.items() if (val.input != id and val.output != id)}
+    
     def mutate(self,history):
+
         if random.random() < 0.8: #Mutera vikterna 80% av tiden
             for connection in self.connections.values():
                 connection.mutate()
         
-        if random.random() < 0.05: #Mutera ny connection 5% av tiden
+        if random.random() < 0.05 or len(self.connections) == 0: #Mutera ny connection 5% av tiden
             self.mutateConnection(history)
         
         if random.random() < 0.01: #Mutera ny node 1% av tiden
-            if len(self.nodes) < 6:
-                self.mutateNode(history)
+            #if len(self.nodes) < 6:
+            self.mutateNode(history)
 
         
 

@@ -12,8 +12,8 @@ class population():
         self.species = []
         self.innoHistory = connectionhistory()
         self.players = []
-        self.size = 50
-        self.dropoffrate = 50
+        self.size = 150
+        self.dropoffrate = 30
     #Du behövder egentligen bara göra all evolution och sånt efter population i den nurvarande generationen har dött
     #Dela upp spelarna i art
     

@@ -18,9 +18,10 @@ for i in range(1,5):
     genome1.mutateConnection(kistory)
     genome1.mutateNode(kistory)
     genome1.makeReady
-
-print(genome1.connections["0"])
 genome1.makeReady()
+miscFuncs.drawNetwork(genome1)
+genome1.mutateRemoveNode()
+
 array = []
 
 miscFuncs.drawNetwork(genome1)
