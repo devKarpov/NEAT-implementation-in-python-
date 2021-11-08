@@ -111,8 +111,11 @@ class population():
         
 
     def startPopulation(self):
-        startBrain = genome()
-        startPlayer = player(startBrain)
-        startPlayer.brain.initalizeNetwork()
-        self.players.append(startPlayer)
+        
+        for i in range(0,50):  
+            startBrain = genome()
+            startBrain.initalizeNetwork()
+            child = player(startBrain)
+            child.brain.mutateConnection(self.innoHistory)
+            self.players.append(child)
         self.nextGeneration()
