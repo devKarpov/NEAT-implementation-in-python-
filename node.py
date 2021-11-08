@@ -13,10 +13,13 @@ class Node():
     def sigmoid(self):
         #VIKTERNA BLIR SKIT HÖGA
         z = self.inputsum
+        #print(z)
         #print(self.inputsum)
         #return 1/(1 + (math.exp(-self.inputsum)))
         z = max(-60.0, min(60.0, 5.0 * z))
+        #print(z)
         return 1.0 / (1.0 + math.exp(-z))
+
     def sendvalue(self, genome): 
         if self.layer != 1:
             activationvalue = self.sigmoid()
@@ -29,5 +32,6 @@ class Node():
                 #if weight > 5:
                     #print(weight)
                 node = genome.getNodeFromId(nodeid)
+                #print(weight * activationvalue )
                 node.inputsum += weight * activationvalue 
 #1,7310

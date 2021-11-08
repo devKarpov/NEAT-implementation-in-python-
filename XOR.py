@@ -1,6 +1,6 @@
 import random
 from matplotlib import pyplot as plt
-from genome import genome
+#from genome import genome
 from node import Node
 from connection import connection
 from history import connectionhistory
@@ -13,13 +13,13 @@ xor = [[0,0,0],
     [1,0,1],
     [1,1,0]]
 
-
-
-
-
+global solutio 
+global times 
+solutio = 0
+times = 0
 def XOR():
+    antalNodes = 0
     pop = population()
-
     pop.startPopulation()
     shuffled = random.sample(xor,4)
     print(shuffled)
@@ -72,16 +72,23 @@ def XOR():
                 print(output3)
                 print(output4)
                 print(gen)
-                miscFuncs.drawNetwork(brain)
+                antalNodes = len(brain.nodes) - 4
                 i = False
                 break
             #if gen == 100:
             #    miscFuncs.drawNetwork(brain)
         if not i:
-            XOR()
+            pass
+            #XOR()
         pop.nextGeneration()
         gen += 1
-XOR()
+    return antalNodes
+
+sum = 0
+for l in range(1,101):
+    sum += XOR()
+    print(sum/l)
+print(sum/101)
 #För någon anledning blir det 1,5 i konsolen hela tiden (varför?)
 #Den håller på väldigt länge med att inte ha gener överhuvudtaget
 #Gör om så när den muterar nodes så får de två nya connections samma vikt som den disablade

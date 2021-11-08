@@ -1,3 +1,4 @@
+#En class som heter typ innovation och sen bara gå igenom alla objekten.
 class connectionhistory():
     def __init__(self):
         self.innovations = [] #Innovativa connections Anledningen till nollan är så att innovation numbers inte börjar på index 0 och så kan man returna 0 eventuellt

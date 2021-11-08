@@ -40,6 +40,8 @@ class connection():
     def completeChange(self):
         value = round(random.uniform(-1, 1),2 )
         return value
+    
+    
     def mutate(self):
         rand = random.random()
         if rand < 0.1: #ändra vikten helt

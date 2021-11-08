@@ -7,13 +7,14 @@ from history import connectionhistory
 from genome import genome
 from player import player
 import miscFuncs
+import config
 class population():
     def __init__(self):
         self.species = []
         self.innoHistory = connectionhistory()
         self.players = []
-        self.size = 150
-        self.dropoffrate = 30
+        self.size = config.populations["size"]
+        self.dropoffrate = config.populations["stale"]
     #Du behövder egentligen bara göra all evolution och sånt efter population i den nurvarande generationen har dött
     #Dela upp spelarna i art
     
@@ -90,8 +91,8 @@ class population():
         self.killBadSpecies()
         self.sortSpecies()
         for i in self.species:
-            #pass
-            print(i.averageFit)
+            pass
+            #print(i.averageFit)
         barn = []
         averageSum = self.averageFitnessSumma()
         for art in self.species: #Du behöver ge innovationhistory
@@ -112,7 +113,7 @@ class population():
 
     def startPopulation(self):
         
-        for i in range(0,50):  
+        for i in range(0,50):  #config?
             startBrain = genome()
             startBrain.initalizeNetwork()
             child = player(startBrain)

@@ -7,6 +7,7 @@ import numpy.random
 import copy
 import miscFuncs
 import math
+import config
 class species():
     def __init__(self,best):
         self.best = best #Den bästa individen i artens genome
@@ -18,7 +19,16 @@ class species():
         totalfitness = 0
         for individ in self.individer:
             totalfitness += individ.fitness
+        
         self.averageFit = totalfitness/(len(self.individer))
+        #if self.averageFit == 1.5:
+        #    ply = self.individer[0].brain
+        #    print(totalfitness, " : ", len(self.individer), " : ", self.individer[0].fitness )
+        #    print(len(self.individer[0].brain.connections))
+        #    for i in ply.connections:
+        #        print(ply.connections[i].weight)
+        #    miscFuncs.drawNetwork(ply)
+        #print(self.averageFit)
     def sorteraArt(self): #Sorterar arten där högst fitness är först/ ökar också dropOff
         self.individer.sort(key=lambda x: x.fitness, reverse=True)    
         if self.individer[0].fitness > self.best.fitness:
@@ -88,9 +98,9 @@ class species():
         sGenome = self.best.brain
         disex = self.findDisjoinGenes(sGenome.connections, testGenome.connections)
         weightDiff = self.weightDifference(sGenome.connections, testGenome.connections) #Spelar ordningen roll?
-        threshold = 3
-        disExcCoefficent = 1
-        weightDiffCoefficent = 0.5
+        threshold = config.specie["compThreshold"]
+        disExcCoefficent = config.specie["disJointCo"]
+        weightDiffCoefficent = config.specie["weightDiffCoefficent"]
         factorN = 1
         if len(sGenome.connections) < 20 and len(testGenome.connections) < 20:
             factorN = 1 #the factor N, the number of genes in the larger genome, normalizes for genome size (N can be set to 1 if both genomes are small, i.e., consist of fewer than 20 genes). 
@@ -184,14 +194,19 @@ class species():
             #Ska du bara ta random vikt från föräldrer om det matchar?
             connection = genome1.connections[innonr]
             if innonr in genome2.connections: #Betyder att det matchar
-                randomnr = random.choice([0, 1])
-                #ta randomly någons vikt.
-                if randomnr == 0:
+                connection1 = genome2.connections[innonr]
+                #ta randomly någons vikt. TAR OCKSÅ STATE (enabled/disabled)
+                if random.random() <= 0.5:
                     #ta från genome1
                     babyGenes[innonr] = copy.deepcopy(connection)
                 else:
-                    babyGenes[innonr] = copy.deepcopy(genome2.connections[innonr])
-            else:
+                    babyGenes[innonr] = copy.deepcopy(connection1)
+                if not connection1.enabled or not connection.enabled: 
+                    if random.random() < 0.75:
+                        babyGenes[innonr].enabled = False
+                    else:
+                        babyGenes[innonr].enabled = True
+            else:   
                 #Behåll alla genes från genome1
                 babyGenes[innonr] = copy.deepcopy(connection)
             #Alla nodes från genome1 ges bara till barnet

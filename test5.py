@@ -1,12 +1,27 @@
+from genome import genome 
+from connection import connection
+import math
+ply = genome()
 
-import random
+ply.connections["0"] = connection(0,3,0)
+ply.connections["0"].weight = 3.1
 
-class test():
-    def __init__(self) -> None:
-        self.test = 0
-s = test()
-a = [0,s]
-b = [0,1,4,9,16,25,36,49,64,81]
-print(a)
-a.remove(s)
-print(a)
+
+ply.connections["1"] = connection(1,3,1)
+ply.connections["1"].weight = 7.9
+
+ply.connections["2"] = connection(2,3,2)
+ply.connections["2"].weight = 1.9
+
+ply.initalizeNetwork()
+ply.makeReady()
+
+input = {}
+input["1"] = 0.3
+input["2"] = 1.0
+output1 = ply.useNetwork(input)[0]
+
+print(output1)
+
+
+print(1 / (1 + math.e ** -1.7))
