@@ -4,8 +4,8 @@ genomes = dict(
     mutateNodeProb = 0.01, #chans att mutera en ny nod
     mutateConnection = 0.05, #Chans att mutera ny connection
     mutateWeightsProb = 0.7, #Chans att mutera vikterna
-    inputNodes = 2, #Antal input nodes
-    outputNodes = 1, #Antal output nodes
+    inputNodes = 9, #Antal input nodes
+    outputNodes = 4, #Antal output nodes
 )
 
 specie = dict(
@@ -15,8 +15,8 @@ specie = dict(
 )
 
 populations = dict(
-    size = 150, #Antal individer per generation
-    stale = 30 #Hur många generationer kan en art gå igenom utan någon fitnessökning innan den dör
+    size = 50, #Antal individer per generation
+    stale = 15 #Hur många generationer kan en art gå igenom utan någon fitnessökning innan den dör
 )
 
 connections = dict(

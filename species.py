@@ -143,6 +143,9 @@ class species():
         #genome1, genome2 = self.tworandomIndivids() #Tar två random grabbar
         genome1 = self.selectPlayer()
         genome2 = self.selectPlayer()
+        print(type(genome2))
+        if str(type(genome2)) == "NoneType":
+            print("TRUEEE")
         if genome1.fitness < genome2.fitness:
             temp = genome1
             genome1 = genome2

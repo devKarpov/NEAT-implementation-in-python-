@@ -119,4 +119,3 @@ class population():
             child = player(startBrain)
             child.brain.mutateConnection(self.innoHistory)
             self.players.append(child)
-        self.nextGeneration()
