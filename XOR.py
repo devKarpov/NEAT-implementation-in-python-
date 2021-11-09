@@ -80,15 +80,21 @@ def XOR():
         if not i:
             pass
             #XOR()
+        print(gen)
         pop.nextGeneration()
         gen += 1
-    return antalNodes
+    return antalNodes, (gen - 1)
 
 sum = 0
-for l in range(1,101):
-    sum += XOR()
+gen = 0
+k = 5
+for l in range(1, k + 1):
+    sum1,gen1 = XOR()
+    sum += sum1
+    gen += gen1
     print(sum/l)
-print(sum/101)
+print(sum/k)
+print(gen/k)
 #För någon anledning blir det 1,5 i konsolen hela tiden (varför?)
 #Den håller på väldigt länge med att inte ha gener överhuvudtaget
 #Gör om så när den muterar nodes så får de två nya connections samma vikt som den disablade

@@ -9,12 +9,11 @@ import miscFuncs
 import math
 import config
 class species():
-    def __init__(self,founder):
-        self.best = founder #Den bästa individen i artens genome
-        self.individer = [founder]
+    def __init__(self,best):
+        self.best = best #Den bästa individen i artens genome
+        self.individer = [best]
         self.averageFit = None
         self.dropOff = 0 #
-        self.founder = founder
 
     def averageFitness(self): #Dividebyzero
         totalfitness = 0
@@ -53,10 +52,24 @@ class species():
     def findDisjoinGenes(self, genes1, genes2): # på grund av att disjoint och excess har samma koeffcient behöver vi bara hitta totala mängden av båda och inte båda värdena enskilt 
         #vad ifall dem inte har några gener
         matching = 0
-        for nr in genes1:
-            if nr in genes2: #Betyder att båda har samma gen om det är true
-                if genes1[nr].enabled and genes2[nr].enabled: #Båda måste vara igång
-                    matching += 1
+
+        #for nr in genes1:
+        #    if nr in genes2: #and genes1[nr].enabled and genes2[nr].enabled: #Betyder att båda har samma gen om det är true
+        #        #state1 = getattr(genes1[nr], "enabled")#genes2[nr].enabled
+        #        #state2 = getattr(genes1[nr], "enabled")#genes1[nr].enabled
+        #        #if state1 and state2:
+        #        #Båda måste vara igång
+        #        #print(genes1[nr].enabled, " : " ,genes2[nr].enabled)
+        #            #print(True)
+        #        matching += 1 
+        for gene in genes1.values():
+            for gene1 in genes2.values():
+                if gene.innovationnumber == gene1.innovationnumber:
+                    if gene.state == True and gene1.state == True:
+                        matching += 1
+                    
+                    break
+        
         disex = len(genes1) + len(genes2) - matching * 2 #Kolla len faktiskt blir rätt
         #(len(genes1) - matching) + (len(genes2) - matching)
         return disex
@@ -70,10 +83,10 @@ class species():
                 return 0
         for nr in genes1:
             if nr in genes2: #Betyder att båda har samma gen om det är true
-                if genes1[nr].enabled and genes2[nr].enabled: #Båda måste vara igång
-                    count += 1
-                    diff = abs(genes1[nr].weight - genes2[nr].weight)
-                    total += diff
+                #if genes1[nr].enabled and genes2[nr].enabled: #Båda måste vara igång
+                count += 1
+                diff = abs(genes1[nr].weight - genes2[nr].weight)
+                total += diff
         if count == 0: #Vad ska det bli om inga matchar? divide by zero SKA DET VERKLIGEN VARA 100
             return 100
         #print(total/count)
@@ -81,7 +94,7 @@ class species():
 
     #Kollar ifall genome är kompatibel till den arten
     def isCompatiable(self, testGenome):
-        sGenome = self.founder.brain
+        sGenome = self.best.brain
         disex = self.findDisjoinGenes(sGenome.connections, testGenome.connections)
         weightDiff = self.weightDifference(sGenome.connections, testGenome.connections) #Spelar ordningen roll?
         threshold = config.specie["compThreshold"]
@@ -187,11 +200,11 @@ class species():
                     babyGenes[innonr] = copy.deepcopy(connection)
                 else:
                     babyGenes[innonr] = copy.deepcopy(connection1)
-                if not connection1.enabled or not connection.enabled: 
+                if not connection1.state or not connection.state: 
                     if random.random() < 0.75:
-                        babyGenes[innonr].enabled = False
+                        babyGenes[innonr].state = False
                     else:
-                        babyGenes[innonr].enabled = True
+                        babyGenes[innonr].state = True
             else:   
                 #Behåll alla genes från genome1
                 babyGenes[innonr] = copy.deepcopy(connection)

@@ -26,7 +26,7 @@ class Node():
         else:
             activationvalue = self.inputsum
         for connection in self.outconnections:  #Går igenom all utgående connections för denna noden och skicka ut activationvalue * vikt
-            if connection.enabled: #Ifall den inte är enabled så skicka inte
+            if connection.state: #Ifall den inte är enabled så skicka inte
                 nodeid = connection.output
                 weight = connection.weight
                 #if weight > 5:

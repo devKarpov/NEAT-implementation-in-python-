@@ -11,3 +11,7 @@ Kolla när en connection redan finns vid mutateconnection
 Vad ifall du kunde behålla data från förut men bara lägga till. Till exempel vid mutationer så du slipper gå igenom alla connections igen osv.
 
 Resetas fitnessen?
+
+
+DET VERKAR SOM DEN TYP GÖR VARANNAN GENERATION ELLER NÅGOT
+Alltså att den inte crossover med den nurvarande individerna förens en extra generation

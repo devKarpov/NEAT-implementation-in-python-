@@ -20,7 +20,7 @@ class genome():
         connections = [] #Connections funktionen ska returna
         for connection in self.connections.values(): #Går igenom nätverkets connections
             input = connection.input
-            if input == nodeId and connection.enabled:
+            if input == nodeId and connection.state:
                 connections.append(connection)
         return connections #Kanske ska göra något om den är tom
 
@@ -53,7 +53,7 @@ class genome():
     
     def connectNodes(self): # Går igenom alla connections som genome har och ger de relevanta connectionsarna till nodsen.
         for connection in self.connections.values():
-            if connection.enabled: #Ge bara om connectionen faktiskt är igång
+            if connection.state: #Ge bara om connectionen faktiskt är igång
                 fromNode = connection.input
                 fromNode = self.getNodeFromId(fromNode)
                 fromNode.outconnections.append(connection)
@@ -160,7 +160,7 @@ class genome():
             return
         tempList = list(self.connections.items()) #Långasmt? ska det ens vara list?
         innonr, randomConnection = random.choice(tempList) #Detta kanske går långsamt? du får en index
-        self.connections[innonr].enabled = False #Måste den vara på från början för att det ska hända?
+        self.connections[innonr].state = False #Måste den vara på från början för att det ska hända?
         weight = self.connections[innonr].weight
         fromNode = self.getNodeFromId(randomConnection.input)
         toNode = self.getNodeFromId(randomConnection.output)

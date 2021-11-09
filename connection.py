@@ -8,7 +8,7 @@ class connection():
         self.input = input
         self.output = output
         self.weight = random.uniform(-1,1)
-        self.enabled = True
+        self.state = True
         self.innovationnumber = innonr
     #Testa det här https://stackoverflow.com/questions/31708478/how-to-evolve-weights-of-a-neural-network-in-neuroevolution
     #Frågan är hur man ska mutera vikterna

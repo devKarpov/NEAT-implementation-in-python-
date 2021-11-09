@@ -8,3 +8,5 @@ Gör om genomes genes till en dictonary där key är innovationnumber, Bro behö
 Det är inte så svårt att byta tillbaka
 
 Lägg till history parameter till varje funktion eftersom history endast kommer finnas på population
+
+TA FAKTISKT BORT OBJEKTEN
