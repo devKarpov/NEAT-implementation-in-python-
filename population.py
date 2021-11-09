@@ -21,6 +21,8 @@ class population():
     def putInSpecies(self):
         #ta bort alla individer i arten
         #Best kommer inte försvinna för den är en enskild variabel
+        #https://www.youtube.com/watch?v=cXVUSxSxY-E
+        #Enligt den här video 
         for art in self.species:
             art.individer = []
         #Gå igenom varje player och kolla om de är kompatibel med någon av arterna annars blir det en ny art
@@ -36,8 +38,29 @@ class population():
             #Ifall den kommer hit är den inte kompatibel med någon art så en ny måste skapas
             nyArt = species(player)
             self.species.append(nyArt)
-            
-    
+     
+    ''' DET FUNKAR INTE
+    def putInSpecies(self, list): #List med players
+        
+        #Ta random grabb från individer
+        random.shuffle(list) #Gör så jag kan ta en random individ från players
+        grabb = list[-1] #Tar den sista från shuffled listan (På grund av att pop går snabbare och tar bort den sista)
+        nyArt = species(grabb)#Skapar ny art med den grabben som founder
+        list.pop() #Tar bort den individen 
+        marked = [] #players om inte ingick i arten
+        #Gå igenom alla andra individer och se ifall dem är kompatibla med den arten. Om inte så markerar vi dem
+        for player in list: #Går igenom resterande individer
+            if nyArt.isCompatiable(player.brain):
+                print("true")
+                nyArt.individer.append(player)
+            else:
+                marked.append(player)
+        self.species.append(nyArt)
+        if len(marked) != 0: #Ifall det finns markerade
+            #print(len(marked))
+            self.putInSpecies(marked)
+    '''
+
     def sortSpecies(self): #Sorts species by fitness
         self.species.sort(key=lambda x: (x.averageFit), reverse=True)
 
@@ -107,6 +130,8 @@ class population():
             antal = self.size - len(barn)
             for i in range(0,antal):
                 barn.append(bestArt.createChild(self.innoHistory))
+        #print(len(self.species))
+        #self.species = [] #Tar bort alla gamla arten
         self.players = barn
         #Här borde fitnessen clearas på alla indivder eftersom de bästa fortfarande har kvar sin fitness? 
         
@@ -119,4 +144,3 @@ class population():
             child = player(startBrain)
             child.brain.mutateConnection(self.innoHistory)
             self.players.append(child)
-        self.nextGeneration()

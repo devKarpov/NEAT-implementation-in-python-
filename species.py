@@ -9,11 +9,12 @@ import miscFuncs
 import math
 import config
 class species():
-    def __init__(self,best):
-        self.best = best #Den bästa individen i artens genome
-        self.individer = [best]
+    def __init__(self,founder):
+        self.best = founder #Den bästa individen i artens genome
+        self.individer = [founder]
         self.averageFit = None
         self.dropOff = 0 #
+        self.founder = founder
 
     def averageFitness(self): #Dividebyzero
         totalfitness = 0
@@ -40,62 +41,47 @@ class species():
     def sharedFitness(self): #Förstår inte riktigt men tror detta gör att inte en art tar över hela populationen
         for individ in self.individer: #Försök göra detta på en radn för jag fattar inte hur man gör (how to run functon on attribute on all objects in list)
             individ.fitness = individ.fitness/len(self.individer)
-
-            
-   # def orderGenes(self, genes): #ger ordningen av generna där lägst innovationnumber går först, Gör till class variable
-    #    #Varför behövs den här när gensen är i en dictionary?
-     #   sorted_genes = copy.deepcopy(genes)
-      #  sorted_genes.sort(key=lambda x: x.innovationnumber, reverse=False) 
-       # return sorted_genes
-    
-    def createArray(self, genes, n):
-        #geneDict = {}
-        #for connection in genes:
-        #    nr = connection.innovationnumber
-        #    geneDict[str(id)] = True
-        #Nu bör genes redan från början vara en dictionary?
-        array = []
-        for i in range(0, n+1):#Ska det vara n+1?
-            if str(i) in genes:
-                array.append(1)
-            else:
-                array.append(0)
-        return array
     #Engligt pappret ska du få alla disjoin genes totalt. Varesig de är från genome 1 eller 2.
     #Rent tekniskt så ifall du vet antalet excess genes borde du ganska lätt kunna räkna ut antalet disjoint genes
     #Code bullet satte coeffcienten för disjoint och excess som samma.
     #Vad ifall du gör de två generna till en matris. Där raderna är genome1 och 2 och kolumner representerar en gene. Om en kolumn är 0 1 så betyder det att det är en disjoint.
     #Sen måste du lösa
     #utgå från att genes är sorterade
+
+    #https://www.youtube.com/watch?v=cXVUSxSxY-E
+    #Enligt videon ska du bara kolla på connections som är enabled
     def findDisjoinGenes(self, genes1, genes2): # på grund av att disjoint och excess har samma koeffcient behöver vi bara hitta totala mängden av båda och inte båda värdena enskilt 
         #vad ifall dem inte har några gener
         matching = 0
         for nr in genes1:
             if nr in genes2: #Betyder att båda har samma gen om det är true
-                matching += 1
-        disex = (len(genes1) - matching) + (len(genes2) - matching)
+                if genes1[nr].enabled and genes2[nr].enabled: #Båda måste vara igång
+                    matching += 1
+        disex = len(genes1) + len(genes2) - matching * 2 #Kolla len faktiskt blir rätt
+        #(len(genes1) - matching) + (len(genes2) - matching)
         return disex
 #Lär finnas något mycket bättre sätt
-
+    #https://www.youtube.com/watch?v=cXVUSxSxY-E
+    #Enligt videon ska du bara kolla på connections som är enabled
     def weightDifference(self, genes1, genes2):
         count = 0
         total = 0
-        lower = 0
         if len(genes1) == 0 or len(genes1) == 0: #går kanske att lägga ovanför?
                 return 0
         for nr in genes1:
             if nr in genes2: #Betyder att båda har samma gen om det är true
-                count += 1
-                diff = abs(genes1[nr].weight - genes2[nr].weight)
-                total += diff
-        if count == 0: #Vad ska det bli om inga matchar? divide by zero
+                if genes1[nr].enabled and genes2[nr].enabled: #Båda måste vara igång
+                    count += 1
+                    diff = abs(genes1[nr].weight - genes2[nr].weight)
+                    total += diff
+        if count == 0: #Vad ska det bli om inga matchar? divide by zero SKA DET VERKLIGEN VARA 100
             return 100
         #print(total/count)
         return total/count
 
     #Kollar ifall genome är kompatibel till den arten
     def isCompatiable(self, testGenome):
-        sGenome = self.best.brain
+        sGenome = self.founder.brain
         disex = self.findDisjoinGenes(sGenome.connections, testGenome.connections)
         weightDiff = self.weightDifference(sGenome.connections, testGenome.connections) #Spelar ordningen roll?
         threshold = config.specie["compThreshold"]
