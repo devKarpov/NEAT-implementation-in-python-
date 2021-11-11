@@ -85,6 +85,8 @@ class species():
                 return 0
         for nr in genes1:
             if nr in genes2: #Betyder att båda har samma gen om det är true
+                if genes2[nr].enabled:
+                    print(genes2[nr].enabled)
                 count += 1
                 diff = abs(genes1[nr].weight - genes2[nr].weight)
                 total += diff
@@ -96,7 +98,9 @@ class species():
     #Kollar ifall genome är kompatibel till den arten
     def isCompatiable(self, testGenome):
         sGenome = self.best.brain
-        disex = self.findDisjoinGenes(sGenome.connections, testGenome.connections)
+        genes1 = {key:val for key, val in sGenome.connections.items() if not val.enabled}
+        genes2 = {key:val for key, val in sGenome.connections.items() if not val.enabled}
+        disex = self.findDisjoinGenes(genes1, genes2)
         weightDiff = self.weightDifference(sGenome.connections, testGenome.connections) #Spelar ordningen roll?
         threshold = config.specie["compThreshold"]
         disExcCoefficent = config.specie["disJointCo"]

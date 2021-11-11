@@ -82,6 +82,7 @@ def XOR():
             #XOR()
         pop.nextGeneration()
         gen += 1
+        print(gen)
     return antalNodes
 
 sum = 0
