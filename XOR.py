@@ -86,10 +86,10 @@ def XOR():
     return antalNodes
 
 sum = 0
-for l in range(1,101):
+for l in range(1,5):
     sum += XOR()
     print(sum/l)
-print(sum/101)
+print(sum/4)
 #För någon anledning blir det 1,5 i konsolen hela tiden (varför?)
 #Den håller på väldigt länge med att inte ha gener överhuvudtaget
 #Gör om så när den muterar nodes så får de två nya connections samma vikt som den disablade

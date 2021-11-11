@@ -72,6 +72,8 @@ class species():
         matching = 0
         for nr in genes1:
             if nr in genes2: #Betyder att båda har samma gen om det är true
+                if not genes2[nr].enabled:
+                    print(genes2[nr].enabled)
                 matching += 1
         disex = (len(genes1) - matching) + (len(genes2) - matching)
         return disex
@@ -85,8 +87,6 @@ class species():
                 return 0
         for nr in genes1:
             if nr in genes2: #Betyder att båda har samma gen om det är true
-                if genes2[nr].enabled:
-                    print(genes2[nr].enabled)
                 count += 1
                 diff = abs(genes1[nr].weight - genes2[nr].weight)
                 total += diff
@@ -98,21 +98,20 @@ class species():
     #Kollar ifall genome är kompatibel till den arten
     def isCompatiable(self, testGenome):
         sGenome = self.best.brain
-        genes1 = {key:val for key, val in sGenome.connections.items() if not val.enabled}
-        genes2 = {key:val for key, val in sGenome.connections.items() if not val.enabled}
+        genes1 = {key:val for key, val in sGenome.connections.items() if val.enabled}
+        genes2 = {key:val for key, val in testGenome.connections.items() if val.enabled}
         disex = self.findDisjoinGenes(genes1, genes2)
-        weightDiff = self.weightDifference(sGenome.connections, testGenome.connections) #Spelar ordningen roll?
+        weightDiff = self.weightDifference(genes1, genes2) #Spelar ordningen roll?
         threshold = config.specie["compThreshold"]
         disExcCoefficent = config.specie["disJointCo"]
         weightDiffCoefficent = config.specie["weightDiffCoefficent"]
         factorN = 1
-        if len(sGenome.connections) < 20 and len(testGenome.connections) < 20:
+        if len(genes1) < 20 and len(genes2) < 20:
             factorN = 1 #the factor N, the number of genes in the larger genome, normalizes for genome size (N can be set to 1 if both genomes are small, i.e., consist of fewer than 20 genes). 
-        else: 
-            if len(sGenome.connections) < len(testGenome.connections):
-                factorN = len(testGenome.connections)
-            else:
-                factorN = len(sGenome.connections)
+        elif len(sGenome.connections) < len(genes2):
+            factorN = len(genes2)
+        else:
+            factorN = len(genes1)
         Delta = ((disExcCoefficent * disex)/factorN) + weightDiffCoefficent * weightDiff #Formel för att veta combatiblity från stanley papper
         if Delta > threshold:
             pass

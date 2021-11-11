@@ -37,7 +37,8 @@ class population():
             nyArt = species(player)
             self.species.append(nyArt)
             
-    
+    def putInSpecies1(self):
+        
     def sortSpecies(self): #Sorts species by fitness
         self.species.sort(key=lambda x: (x.averageFit), reverse=True)
 
