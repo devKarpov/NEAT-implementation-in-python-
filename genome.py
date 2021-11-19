@@ -11,16 +11,17 @@ class genome():
         self.nextnode = 1
         #Kanske borde använad en dictonary för nodsen, även för connections?
         self.nodes = [] #Biasnoden ska ha sitt värde = 0, Detta är i ordningen nodesen har kommit in i nätverket
-        self.connections = {} #Alla connections som det nuvarande nätverket har i sina gener, Detta är i ordningen connections har kommit in i nätverket
+        self.aConnections = {} #Alla connections som det nuvarande nätverket har i sina gener, Detta är i ordningen connections har kommit in i nätverket
+        self.dConnections = {} #Avaktiverade gener
         self.inputnodes = config.genomes["inputNodes"]
         self.outputnodes = config.genomes["outputNodes"]
         self.layers = 2
     
     def getOutputconnections(self, nodeId): #Ger alla enabled connections som en node ska skicka till
         connections = [] #Connections funktionen ska returna
-        for connection in self.connections.values(): #Går igenom nätverkets connections
+        for connection in self.aConnections.values(): #Går igenom nätverkets connections
             input = connection.input
-            if input == nodeId and connection.enabled:
+            if input == nodeId:
                 connections.append(connection)
         return connections #Kanske ska göra något om den är tom
 
@@ -52,8 +53,7 @@ class genome():
                 return node
     
     def connectNodes(self): # Går igenom alla connections som genome har och ger de relevanta connectionsarna till nodsen.
-        for connection in self.connections.values():
-            if connection.enabled: #Ge bara om connectionen faktiskt är igång
+        for connection in self.aConnections.values(): #Ge bara om connectionen faktiskt är igång
                 fromNode = connection.input
                 fromNode = self.getNodeFromId(fromNode)
                 fromNode.outconnections.append(connection)
@@ -84,7 +84,7 @@ class genome():
         #KOLLA UPP LIST COMPREHENSIONS OCH LAMBDA
             
     def connectionExists(self, fromNodeId, toNodeId):
-        for i in self.connections.values():
+        for i in (self.aConnections | self.dConnections).values():
             if i.input == fromNodeId and i.output == toNodeId:
                 return True
         return False
@@ -155,13 +155,18 @@ class genome():
     def mutateNode(self,history):
         #Du måste få index för connectionen
         self.clearNetwork() #DET HÄR BEHVÖS EGENTLIGEN INTE GÖRAS TYP MEN JAG GÖR DET ÄNDÅ FIXA DET SENARELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
-        length = len(self.connections) #GÅR INTE ATT MUTERA EN NODE MELLAN TVÅ NODES SOM INTE HAR CONNECTIONS
+        #SKA DET VARA DISABLED CONNECTIONS OCKSÅ?
+        length = len((self.aConnections | self.dConnections)) #GÅR INTE ATT MUTERA EN NODE MELLAN TVÅ NODES SOM INTE HAR CONNECTIONS
         if length == 0: #Betyder att det inte går att mutera
             return
-        tempList = list(self.connections.items()) #Långasmt? ska det ens vara list?
+        tempList = list((self.aConnections | self.dConnections).items()) #Långasmt? ska det ens vara list?
         innonr, randomConnection = random.choice(tempList) #Detta kanske går långsamt? du får en index
-        self.connections[innonr].enabled = False #Måste den vara på från början för att det ska hända?
-        weight = self.connections[innonr].weight
+        #HUR FUNGERAR DEN HÄR FUNKTIONEN
+        if randomConnection.enabled:
+            self.aConnections[str(innonr)] = None
+            self.dConnections[str(innonr)] = randomConnection
+        randomConnection.enabled = False #Måste den vara på från början för att det ska hända?
+        weight = randomConnection.weight
         fromNode = self.getNodeFromId(randomConnection.input)
         toNode = self.getNodeFromId(randomConnection.output)
         layer = fromNode.layer + 1
@@ -178,12 +183,12 @@ class genome():
         innonr = history.isNew(newNode.id, toNode.id)
         firstConnection = connection(newNode.id, toNode.id, innonr)
         firstConnection.weight = 1
-        self.connections[str(innonr)] = firstConnection
+        self.aConnections[str(innonr)] = firstConnection
         innonr = history.isNew(fromNode.id, newNode.id)
         secondConnection = connection(fromNode.id, newNode.id, innonr)
         #The new connectionleading into the new node receives a weight of 1, and the new connection leading out receives the same weight as the old connection
         secondConnection.weight = weight
-        self.connections[str(innonr)] = secondConnection
+        self.aConnections[str(innonr)] = secondConnection
 
     def mutateConnection(self, history): #Detta är inte effektivt.
         #Hur kollar man så att det faktiskt går att göra en ny connection
@@ -203,7 +208,7 @@ class genome():
             return
         innovationnumber = history.isNew(fromNode.id, toNode.id)
         newconnection = connection(fromNode.id, toNode.id, innovationnumber) # Du måste sätta en random vikt på connectionen också
-        self.connections[str(innovationnumber)] = newconnection
+        self.aConnections[str(innovationnumber)] = newconnection
 
     def mutateRemoveNode(self): #Tar bort en node och alla connections som har med den noden att göra
         i = True
@@ -217,12 +222,13 @@ class genome():
         self.nodes.remove(randomNode) #Tar bort den noden från node listan, tror att det funkar...
         #Tar bort alla connections som är kopplat till den noden
         print(type(self.connections))
-        self.connections = {key:val for key, val in self.connections.items() if (val.input != id and val.output != id)}
-    
+        self.aConnections = {key:val for key, val in self.aConnections.items() if (val.input != id and val.output != id)}
+        self.dConnections = {key:val for key, val in self.dConnections.items() if (val.input != id and val.output != id)}
+        
     def mutate(self,history):
 
         if random.random() < config.genomes["mutateWeightsProb"]: #Mutera vikterna 80% av tiden
-            for connection in self.connections.values():
+            for connection in (self.aConnections | self.dConnections).values():
                 connection.mutate()
         
         if random.random() < config.genomes["mutateConnection"] or len(self.connections) == 0: #Mutera ny connection 5% av tiden

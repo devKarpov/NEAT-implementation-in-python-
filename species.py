@@ -96,19 +96,19 @@ class species():
     #Kollar ifall genome är kompatibel till den arten
     def isCompatiable(self, testGenome):
         sGenome = self.best.brain
-        disex = self.findDisjoinGenes(sGenome.connections, testGenome.connections)
-        weightDiff = self.weightDifference(sGenome.connections, testGenome.connections) #Spelar ordningen roll?
+        disex = self.findDisjoinGenes(sGenome.aConnections, testGenome.aConnections)
+        weightDiff = self.weightDifference(sGenome.aConnections, testGenome.aConnections) #Spelar ordningen roll?
         threshold = config.specie["compThreshold"]
         disExcCoefficent = config.specie["disJointCo"]
         weightDiffCoefficent = config.specie["weightDiffCoefficent"]
         factorN = 1
-        if len(sGenome.connections) < 20 and len(testGenome.connections) < 20:
+        if len((sGenome.aConnections | sGenome.dConnections)) < 20 and len((testGenome.aConnections | testGenome.dConnections)) < 20:
             factorN = 1 #the factor N, the number of genes in the larger genome, normalizes for genome size (N can be set to 1 if both genomes are small, i.e., consist of fewer than 20 genes). 
         else: 
-            if len(sGenome.connections) < len(testGenome.connections):
-                factorN = len(testGenome.connections)
+            if len((sGenome.aConnections | sGenome.dConnections)) < len((testGenome.aConnections | testGenome.dConnections)):
+                factorN = len((testGenome.aConnections | testGenome.dConnections))
             else:
-                factorN = len(sGenome.connections)
+                factorN = len((sGenome.aConnections | sGenome.dConnections))
         Delta = ((disExcCoefficent * disex)/factorN) + weightDiffCoefficent * weightDiff #Formel för att veta combatiblity från stanley papper
         if Delta > threshold:
             pass
@@ -149,8 +149,16 @@ class species():
             genome2 = temp
         genome1 = genome1.brain #tar deras hjärnor
         genome2 = genome2.brain
-        genes1 = genome1.connections #Ordnar deras geneer
-        genes2 = genome2.connections
+        genes1 = genome1.aConnections #Ordnar deras geneer
+        genes2 = genome2.aConnections
+        #
+
+
+
+        #DU BÖHÖVER OCKSÅ GE DEM DEM INAKTIVERADE GENERNA
+
+
+
         highest = 0
         #Behöver man ens ordra gensen? räcker det inte med len(genome1.connections)
         if len(genes1) == 0 and len(genes2) == 0:
