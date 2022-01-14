@@ -172,7 +172,8 @@ class species():
         elif len(genes1) == 0:
             print("TESTAR2")
             babyGenome = genome()
-            babyGenome.connections = copy.deepcopy(genome2.connections)
+            babyGenome.aConnections = copy.deepcopy(genome2.aConnections) 
+            babyGenome.dConnections = copy.deepcopy(genome2.dConnections)
             babyGenome.nodes = copy.deepcopy(genome2.nodes)
             babyGenome.layers = genome2.layers
             babyGenome.nextnode = genome2.nextnode
@@ -182,21 +183,15 @@ class species():
         elif len(genes2) == 0:
             print("TESTAR1")
             babyGenome = genome()
-            babyGenome.connections = copy.deepcopy(genome1.connections)
+            babyGenome.aConnections = copy.deepcopy(genome1.aConnections) 
+            babyGenome.dConnections = copy.deepcopy(genome1.dConnections)
             babyGenome.nodes = copy.deepcopy(genome1.nodes)
             babyGenome.layers = genome1.layers
             babyGenome.nextnode = genome1.nextnode
             babyGenome.mutate(history)
             baby = player(babyGenome)
             return baby
-        #if genes1[-1].innovationnumber >= genes2[-1].innovationnumber:
-        #    #detta ger inte lower eftersom du kommer ha dem i array
-        #    highest = genes1[-1].innovationnumber
-        #else:
-        #    highest = genes2[-1].innovationnumber
-        #Anta att du har två arrays
-        #genes1 = self.createArray(genes1, highest)
-        #genes2 = self.createArray(genes2, highest)
+        #Du måste fixa så babygenes har aConnections och dConnections
         babyGenes = {}
         for innonr in genome1.connections:
             #Ska du bara ta random vikt från föräldrer om det matchar?
@@ -214,6 +209,30 @@ class species():
                         babyGenes[innonr].enabled = False
                     else:
                         babyGenes[innonr].enabled = True
+            else:   
+                #Behåll alla genes från genome1
+                babyGenes[innonr] = copy.deepcopy(connection)
+            #Alla nodes från genome1 ges bara till barnet
+        for innonr in genome1.connections:
+            #Ska du bara ta random vikt från föräldrer om det matchar?
+            connection = genome1.connections[innonr]
+            if innonr in genome2.aConnections:
+                connection1 = genome2.aConnections[innonr]
+            elif innonr in genome2.dConnections:  
+                connection1 = genome2.dConnections[innonr]
+            else:
+                continue
+            #ta randomly någons vikt. TAR OCKSÅ STATE (enabled/disabled)
+            if random.random() <= 0.5:
+                #ta från genome1
+                babyGenes[innonr] = copy.deepcopy(connection)
+            else:
+                babyGenes[innonr] = copy.deepcopy(connection1)
+            if not connection1.enabled or not connection.enabled: 
+                if random.random() < 0.75:
+                    babyGenes[innonr].enabled = False
+                else:
+                    babyGenes[innonr].enabled = True
             else:   
                 #Behåll alla genes från genome1
                 babyGenes[innonr] = copy.deepcopy(connection)
