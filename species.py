@@ -192,23 +192,25 @@ class species():
             baby = player(babyGenome)
             return baby
         #Du måste fixa så babygenes har aConnections och dConnections
-        babyGenes = {}
-        for innonr in genome1.connections:
+        babyaGenes = {}
+        babydGenes = {}
+        #TESTA ATT GÖRA TVÅ FOR LOOPS, EN  SOM GÅR IGENOM DEM AKTIVERADE OCH VICE VERSA
+        for innonr in genome1.connections: #KOMBINERA BÅDA ACONNECTIONS OCH D
             #Ska du bara ta random vikt från föräldrer om det matchar?
             connection = genome1.connections[innonr]
             if innonr in genome2.connections: #Betyder att det matchar
                 connection1 = genome2.connections[innonr]
                 #ta randomly någons vikt. TAR OCKSÅ STATE (enabled/disabled)
-                if random.random() <= 0.5:
-                    #ta från genome1
-                    babyGenes[innonr] = copy.deepcopy(connection)
-                else:
-                    babyGenes[innonr] = copy.deepcopy(connection1)
                 if not connection1.enabled or not connection.enabled: 
                     if random.random() < 0.75:
-                        babyGenes[innonr].enabled = False
+                        activated = False
                     else:
-                        babyGenes[innonr].enabled = True
+                        activated = True
+                if random.random() <= 0.5:
+                    #ta från genome1
+
+                else:
+                    #Ta från genome2
             else:   
                 #Behåll alla genes från genome1
                 babyGenes[innonr] = copy.deepcopy(connection)
