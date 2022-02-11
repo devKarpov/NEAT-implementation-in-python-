@@ -208,39 +208,31 @@ class species():
                         activated = True
                 if random.random() <= 0.5:
                     #ta från genome1
-
+                    babyConnection = copy.deepcopy(connection)
+                    if activated:
+                        babyConnection.enabled = True
+                        babyaGenes.append(babyConnection)
+                    else:
+                        babyConnection.enabled = False 
+                        babydGenes.append(babyConnection)
                 else:
                     #Ta från genome2
+                    babyConnection = copy.deepcopy(connection1)
+                    if activated:
+                        babyConnection.enabled = True
+                        babyaGenes.append(babyConnection)
+                    else:
+                        babyConnection.enabled = False 
             else:   
                 #Behåll alla genes från genome1
-                babyGenes[innonr] = copy.deepcopy(connection)
-            #Alla nodes från genome1 ges bara till barnet
-        for innonr in genome1.connections:
-            #Ska du bara ta random vikt från föräldrer om det matchar?
-            connection = genome1.connections[innonr]
-            if innonr in genome2.aConnections:
-                connection1 = genome2.aConnections[innonr]
-            elif innonr in genome2.dConnections:  
-                connection1 = genome2.dConnections[innonr]
-            else:
-                continue
-            #ta randomly någons vikt. TAR OCKSÅ STATE (enabled/disabled)
-            if random.random() <= 0.5:
-                #ta från genome1
-                babyGenes[innonr] = copy.deepcopy(connection)
-            else:
-                babyGenes[innonr] = copy.deepcopy(connection1)
-            if not connection1.enabled or not connection.enabled: 
-                if random.random() < 0.75:
-                    babyGenes[innonr].enabled = False
+                if connection1.enabled:
+                    babyaGenes[innonr] = copy.deepcopy(connection)
                 else:
-                    babyGenes[innonr].enabled = True
-            else:   
-                #Behåll alla genes från genome1
-                babyGenes[innonr] = copy.deepcopy(connection)
-            #Alla nodes från genome1 ges bara till barnet
+                    babydGenes[innonr] = copy.deepcopy(connection)
+        #Alla nodes från genome1 ges bara till barnet
         babyGenome = genome()
-        babyGenome.connections = babyGenes
+        babyGenome.aConnections = babyaGenes
+        babyGenome.dConnections = babydGenes
         babyGenome.nodes = copy.deepcopy(genome1.nodes)
         #DET ÄR FÖR DEN FORTPLANTAAR MED DET BÄSTA NÄTVERKET
         babyGenome.nextnode = genome1.nextnode
@@ -249,6 +241,10 @@ class species():
         babyGenome.mutate(history)
         baby = player(babyGenome)
         return baby
+
+
+    def loopGene(genes, bool): #Bool är om det är aktiverade gener eller inte
+                
 
 
     def killHalf(self): #Dödar den sämre halvan av arten. Leta efter ett mer systematiskt sätt att döda av arten
