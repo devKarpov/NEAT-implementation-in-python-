@@ -16,7 +16,7 @@ specie = dict(
 
 populations = dict(
     size = 150, #Antal individer per generation
-    stale = 30 #Hur många generationer kan en art gå igenom utan någon fitnessökning innan den dör
+    stale = 15 #Hur många generationer kan en art gå igenom utan någon fitnessökning innan den dör
 )
 
 connections = dict(
