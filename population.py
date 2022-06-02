@@ -1,12 +1,9 @@
-#Hur många barn varje art ska ha fit (average fittness)/(average fitnessum (när det gäller alla arter)) * population size
 import copy
 import math
-import random
 from species import species
 from history import connectionhistory
 from genome import genome
 from player import player
-import miscFuncs
 import config
 class population():
     def __init__(self):
@@ -15,36 +12,35 @@ class population():
         self.players = []
         self.size = config.populations["size"]
         self.dropoffrate = config.populations["stale"]
-    #Du behövder egentligen bara göra all evolution och sånt efter population i den nurvarande generationen har dött
-    #Dela upp spelarna i art
     
     def putInSpecies(self):
-        #ta bort alla individer i arten
-        #Best kommer inte försvinna för den är en enskild variabel
+        #ta bort alla individer i arterna (förutom reprentanten)
         for art in self.species:
             art.individer = []
-        #Gå igenom varje player och kolla om de är kompatibel med någon av arterna annars blir det en ny art
+        #Gå igenom varje player och kolla om de är kompatibel med någon av arterna annars skapa ny art
         for player in self.players:
             i = False
             for art in self.species:
                 if art.isCompatiable(player.brain):
                     art.individer.append(player)
                     i = True
-                    break #Går till nästa player?
+                    break 
             if i:
                 continue
-            #Ifall den kommer hit är den inte kompatibel med någon art så en ny måste skapas
+            #Ifall den kommer hit är den inte kompatibel med någon art --> ny art
             nyArt = species(player)
             self.species.append(nyArt)
             
     
-    def sortSpecies(self): #Sorts species by fitness
+    def sortSpecies(self): #sorterar arten på fitness
         self.species.sort(key=lambda x: (x.averageFit), reverse=True)
 
+    #Tar hand om ett antal funktioner
+    #för arterna
     def killHalfSpecies(self):
-        for art in self.species:#T
+        for art in self.species:
             art.killHalf()
-            art.sharedFitness() #Ska man göra detta förre eller efter man dödat av hälften?
+            art.sharedFitness() 
             art.averageFitness()
 
     def averageFitnessSumma(self):
@@ -53,32 +49,23 @@ class population():
             sum += art.averageFit
         return sum
     
+    #Tar bort tomma arter
     def tommaSpecies(self):
         self.species = [x for x in self.species if not (len(x.individer) == 0)]
 
+    #tar bort arter som inte har förbättrats
     def killDroppedOffSpecies(self):
         self.species = [x for x in self.species if not (x.dropOff == self.dropoffrate)]
 
+    #Tar bort arter som inte kommer få några barn ändå
     def killBadSpecies(self):
         sum = self.averageFitnessSumma()
         self.species = [x for x in self.species if not (x.averageFit/sum * self.size < 1)]
 
-    def fitnessCalculation(self): #Göra fitnessharing här istället? Nej för då blir det anorlunda för antalet indivder här är större än vad det är senare
-        #Räknar ut fitness från varje player
-        #Nu ligger playersarna i arter så ugå inte från self.players
-        '''for art in self.species:
-            for individ in art.individer:
-                individ.fitness = 1 + len(individ.brain.connections) * 100 + random.random()
-            art.sorteraArt'''
-        
+    #Dåligt namn, sorterar bara alla individerna i arterna
+    #Där högst fitness är högst upp
+    def fitnessCalculation(self): 
         for art in self.species:
-            '''for individ in art.individer:
-                try:
-                    if individ.correct > 3:
-                        individ.fitness = individ.correct * 100
-                except:
-                    individ.fitness = random.random() + 1
-            '''
             art.sorteraArt()
 
     def nextGeneration(self):
@@ -86,34 +73,33 @@ class population():
         self.tommaSpecies()
         self.fitnessCalculation() 
         self.killHalfSpecies()
-        #self.tommaSpecies() Här var den innan
         self.killDroppedOffSpecies()
         self.killBadSpecies()
         self.sortSpecies()
-        for i in self.species:
-            pass
-            #print(i.averageFit)
+
         barn = []
+
         averageSum = self.averageFitnessSumma()
-        for art in self.species: #Du behöver ge innovationhistory
+        for art in self.species: 
+            #Ha kvar de bästa indviderna från förra generationen
             barn.append(copy.deepcopy(art.best))
-            amountOfChildren = math.floor(art.averageFit/averageSum * self.size - 1) #mängden barn den arten får -1 för den bästa redan är i arten
-            #print(amountOfChildren)
-            j = 0
-            for i in range(0, amountOfChildren): #Inte plus 1 för 0 är 0 lmao
+            #mängden barn den arten får -1 för den bästa redan är i arten
+            amountOfChildren = math.floor(art.averageFit/averageSum * self.size - 1) 
+            #Skapar barn
+            for i in range(0, amountOfChildren):
                 barn.append(art.createChild(self.innoHistory))
-        if len(barn) != self.size: #ifall det finns mer platser så ge mer barn till den bästa arten
+        #ifall det finns mer platser så ge mer barn till den bästa arten
+        if len(barn) != self.size: 
             bestArt = self.species[0]
             antal = self.size - len(barn)
             for i in range(0,antal):
                 barn.append(bestArt.createChild(self.innoHistory))
         self.players = barn
-        #Här borde fitnessen clearas på alla indivder eftersom de bästa fortfarande har kvar sin fitness? 
         
 
     def startPopulation(self):
-        
-        for i in range(0,50):  #config?
+        #Ger alla indivder i första generationen åtminstånde en anslutning
+        for i in range(0,config.populations["size"]): 
             startBrain = genome()
             startBrain.initalizeNetwork()
             child = player(startBrain)

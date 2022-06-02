@@ -1,5 +1,3 @@
-
-
 genomes = dict(
     mutateNodeProb = 0.01, #chans att mutera en ny nod
     mutateConnection = 0.05, #Chans att mutera ny connection
@@ -16,7 +14,7 @@ specie = dict(
 
 populations = dict(
     size = 150, #Antal individer per generation
-    stale = 15 #Hur många generationer kan en art gå igenom utan någon fitnessökning innan den dör
+    stale = 30 #Hur många generationer kan en art gå igenom utan någon fitnessökning innan den dör
 )
 
 connections = dict(
