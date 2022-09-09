@@ -1,2 +1,2 @@
 # NEAT-implementation-in-python-
-#Test
+# GA som handlar om att implementera NEAT-algoritmen i python
